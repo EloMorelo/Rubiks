@@ -13,7 +13,7 @@ scene.add(ambientLight);
 
 
 function createCubelet(x, y, z, rightColor, leftColor, topColor, bottomColor, frontColor, backColor) {
-    const spacing = 1.1; 
+    const spacing = 1.8; 
     const cubeSize = 0.9; 
 
     const materials = [
@@ -33,48 +33,44 @@ function createCubelet(x, y, z, rightColor, leftColor, topColor, bottomColor, fr
 
     return cubelet;
 }
-
-
-
 const cubelets = [];
-// czarny 0x000000 biały 0xffffff czerwony 0xff0000  żółty 0xffd500 niebieski 0x0046ad zielony 0x009b48 pomarancz 0x#ff5800 
+// czarny 0x000000 biały 0xffffff czerwony 0xff0000  żółty 0xFFFF00 niebieski 0x0000ff zielony 0x009b48 pomarancz 0xffa500 
 cubelets.push(createCubelet(-1, -1, -1,  0x000000  , 0xffffff, 0x000000, 0xff0000, 0x000000, 0x009b48));
 cubelets.push(createCubelet(-1, -1, 0, 0x000000  , 0xffffff, 0x000000, 0xff0000, 0x000000, 0x000000));
 cubelets.push(createCubelet(-1, -1, 1, 0x000000  , 0xffffff, 0x000000, 0xff0000, 0x0000ff, 0x000000));
 cubelets.push(createCubelet(-1, 0, -1, 0x000000  , 0xffffff, 0x000000, 0x000000, 0x000000, 0x009b48 ));
 cubelets.push(createCubelet(-1, 0, 0, 0x000000  , 0xffffff, 0x000000, 0x000000, 0x000000, 0x000000 ));
 cubelets.push(createCubelet(-1, 0, 1, 0x000000  , 0xffffff, 0x000000, 0x000000, 0x0000ff, 0x000000 ));
-
-
-cubelets.push(createCubelet(-1, 1, -1));
-cubelets.push(createCubelet(-1, 1, 0));
-cubelets.push(createCubelet(-1, 1, 1));
-
-cubelets.push(createCubelet(0, -1, -1));
-cubelets.push(createCubelet(0, -1, 0));
-cubelets.push(createCubelet(0, -1, 1));
-
-cubelets.push(createCubelet(0, 0, -1));
-cubelets.push(createCubelet(0, 0, 0));
-cubelets.push(createCubelet(0, 0, 1));
-
-cubelets.push(createCubelet(0, 1, -1));
-cubelets.push(createCubelet(0, 1, 0));
-cubelets.push(createCubelet(0, 1, 1));
-
-cubelets.push(createCubelet(1, -1, -1));
-cubelets.push(createCubelet(1, -1, 0));
-cubelets.push(createCubelet(1, -1, 1));
-
-cubelets.push(createCubelet(1, 0, -1));
-cubelets.push(createCubelet(1, 0, 0));
-cubelets.push(createCubelet(1, 0, 1));
-
-cubelets.push(createCubelet(1, 1, -1));
-cubelets.push(createCubelet(1, 1, 0));
-cubelets.push(createCubelet(1, 1, 1));
+cubelets.push(createCubelet(-1, 1, -1, 0x000000  , 0xffffff, 0xffa500, 0x000000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet(-1, 1, 0, 0x000000  , 0xffffff, 0xffa500, 0x000000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet(-1, 1, 1, 0x000000  , 0xffffff, 0xffa500, 0x000000, 0x0000ff, 0x000000 ));
+cubelets.push(createCubelet(0, -1, -1, 0x000000  , 0x000000, 0x000000, 0xff0000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet(0, -1, 0, 0x000000  , 0x000000, 0x000000, 0xff0000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet(0, -1, 1, 0x000000  , 0x000000, 0x000000, 0xff0000, 0x0000ff, 0x000000 ));
+cubelets.push(createCubelet(0, 0, -1, 0x000000  , 0x000000, 0x000000, 0x000000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet(0, 0, 0, 0x000000  , 0x000000, 0x000000, 0x000000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet(0, 0, 1, 0x000000  , 0x000000, 0x000000, 0x000000, 0x0000ff, 0x000000 ));
+cubelets.push(createCubelet(0, 1, -1, 0x000000  , 0x000000, 0xffa500, 0x000000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet(0, 1, 0, 0x000000  , 0x000000, 0xffa500, 0x000000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet(0, 1, 1, 0x000000  , 0x000000, 0xffa500, 0x000000, 0x0000ff, 0x000000 ));
+cubelets.push(createCubelet(1, -1, -1, 0xFFFF00  , 0x000000, 0x000000, 0xff0000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet(1, -1, 0, 0xFFFF00  , 0x000000, 0x000000, 0xff0000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet(1, -1, 1, 0xFFFF00  , 0x000000, 0x000000, 0xff0000, 0x0000ff, 0x000000 ));
+cubelets.push(createCubelet(1, 0, -1, 0xFFFF00  , 0x000000, 0x000000, 0x000000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet(1, 0, 0, 0xFFFF00  , 0x000000, 0x000000, 0x000000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet(1, 0, 1, 0xFFFF00  , 0x000000, 0x000000, 0x000000, 0x0000ff, 0x000000 ));
+cubelets.push(createCubelet(1, 1, -1, 0xFFFF00  , 0x000000, 0xffa500, 0x000000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet(1, 1, 0, 0xFFFF00  , 0x000000, 0xffa500, 0x000000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet(1, 1, 1, 0xFFFF00  , 0x000000, 0xffa500, 0x000000, 0x0000ff, 0x000000 ));
 
 cubelets.forEach(cubelet => scene.add(cubelet));
+
+
+
+
+
+
+
 
 camera.position.z = 10;
 

@@ -66,30 +66,79 @@ cubelets.forEach(cubelet => scene.add(cubelet));
 
 //grouping
 const LeftGroup = new THREE.Group();
-const backFaceGroup = new THREE.Group();
+const RightGroup = new THREE.Group();
+const TopGroup = new THREE.Group();
+const BottomGroup = new THREE.Group();
 
-cubelets.forEach(cubelet => {
+/*cubelets.forEach(cubelet => {
     const { x, y, z } = cubelet.position;
-    if (z === -1) {
-        LeftGroup.add(cubelet); 
-    } else if (x === 1) {
-        backFaceGroup.add(cubelet); 
+    if (y === -1) {
+        BottomGroup.add(cubelet);
+    } if (z === -1) {
+        LeftGroup.add(cubelet);
+    }if (z === 1) {
+        RightGroup.add(cubelet);
     }
-});
+}); */
+function bot()
+{
+    cubelets.forEach(cubelet => {
+        const { x, y, z } = cubelet.position;
+        if (y === -1) {
+            BottomGroup.add(cubelet);
+        }
+    });
+}
+function right()
+{
+    cubelets.forEach(cubelet => {
+        const { x, y, z } = cubelet.position;
+        if (z === 1) {
+            RightGroup.add(cubelet);
+        }
+    });
+}
+function left()
+{
+    cubelets.forEach(cubelet => {
+        const { x, y, z } = cubelet.position;
+        if (z === -1) {
+            LeftGroup.add(cubelet);
+        }
+    });
+}
 
 
+
+scene.add(BottomGroup);
+scene.add(TopGroup);
 scene.add(LeftGroup);
-scene.add(backFaceGroup);
+scene.add(RightGroup);
 
 
 
 
 //rotation section
 function rotateLeft(clockwise) {
+    left();
     const angle = clockwise ? Math.PI / 2 : -Math.PI / 2;
     LeftGroup.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), angle);
 }
 
+function rotateRight(clockwise) {
+    right();
+    const angle = clockwise ? Math.PI / 2 : -Math.PI / 2;
+    RightGroup.rotateOnWorldAxis(new THREE.Vector3(0, 0, -1), angle);
+}
+function rotateBottom(clockwise) {
+    bot();
+    const angle = clockwise ? Math.PI / 2 : -Math.PI / 2;
+    BottomGroup.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), angle);
+}
+
+
+
+//Button section
 const rotateLeftButton = document.getElementById('rotateLeftButton');
 rotateLeftButton.addEventListener('click', () => {
     console.log('Button clicked.');
@@ -100,6 +149,18 @@ const rotateLeftcounter = document.getElementById('rotateLeftcounter');
 rotateLeftcounter.addEventListener('click', () => {
     console.log('Button clicked.');
     rotateLeft(false);
+});
+
+const rotateRightButton = document.getElementById('rotateRightButton');
+rotateRightButton.addEventListener('click', () => {
+    console.log('Button clicked.');
+    rotateRight(true);
+});
+
+const rotateBottomButton = document.getElementById('rotateBottomButton');
+rotateBottomButton.addEventListener('click', () => {
+    console.log('Button clicked.');
+    rotateBottom(true);
 });
 
 //Camera section
@@ -114,6 +175,7 @@ controls.target.set(0, 0, 0);
 renderer.domElement.addEventListener('contextmenu', function (event) {
     event.preventDefault();
 }, false);
+
 
 
 function animate() {

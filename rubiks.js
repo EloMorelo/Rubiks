@@ -12,7 +12,7 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLight);
 
 //cubelet section
-function createCubelet(x, y, z, rightColor, leftColor, topColor, bottomColor, frontColor, backColor) {
+function createCubelet(id, x, y, z, rightColor, leftColor, topColor, bottomColor, frontColor, backColor) {
     const spacing = 1.0; 
     const cubeSize = 0.9; 
 
@@ -27,6 +27,8 @@ function createCubelet(x, y, z, rightColor, leftColor, topColor, bottomColor, fr
 
     const cubeletGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
     const cubelet = new THREE.Mesh(cubeletGeometry, materials);
+    
+    cubelet.userData.id = id; // Assigning ID to the cubelet
 
     cubelet.position.set(x * spacing, y * spacing, z * spacing);
 
@@ -34,33 +36,33 @@ function createCubelet(x, y, z, rightColor, leftColor, topColor, bottomColor, fr
 }
 const cubelets = [];
 // black 0x000000 white 0xffffff red 0xff0000  yellow 0xFFFF00 blue 0x0000ff green 0x009b48 orange 0xffa500 
-cubelets.push(createCubelet(-1, -1, -1,  0x000000  , 0xffffff, 0x000000, 0xff0000, 0x000000, 0x009b48));
-cubelets.push(createCubelet(-1, -1, 0, 0x000000  , 0xffffff, 0x000000, 0xff0000, 0x000000, 0x000000));
-cubelets.push(createCubelet(-1, -1, 1, 0x000000  , 0xffffff, 0x000000, 0xff0000, 0x0000ff, 0x000000));
-cubelets.push(createCubelet(-1, 0, -1, 0x000000  , 0xffffff, 0x000000, 0x000000, 0x000000, 0x009b48 ));
-cubelets.push(createCubelet(-1, 0, 0, 0x000000  , 0xffffff, 0x000000, 0x000000, 0x000000, 0x000000 ));
-cubelets.push(createCubelet(-1, 0, 1, 0x000000  , 0xffffff, 0x000000, 0x000000, 0x0000ff, 0x000000 ));
-cubelets.push(createCubelet(-1, 1, -1, 0x000000  , 0xffffff, 0xffa500, 0x000000, 0x000000, 0x009b48 ));
-cubelets.push(createCubelet(-1, 1, 0, 0x000000  , 0xffffff, 0xffa500, 0x000000, 0x000000, 0x000000 ));
-cubelets.push(createCubelet(-1, 1, 1, 0x000000  , 0xffffff, 0xffa500, 0x000000, 0x0000ff, 0x000000 ));
-cubelets.push(createCubelet(0, -1, -1, 0x000000  , 0x000000, 0x000000, 0xff0000, 0x000000, 0x009b48 ));
-cubelets.push(createCubelet(0, -1, 0, 0x000000  , 0x000000, 0x000000, 0xff0000, 0x000000, 0x000000 ));
-cubelets.push(createCubelet(0, -1, 1, 0x000000  , 0x000000, 0x000000, 0xff0000, 0x0000ff, 0x000000 ));
-cubelets.push(createCubelet(0, 0, -1, 0x000000  , 0x000000, 0x000000, 0x000000, 0x000000, 0x009b48 ));
-cubelets.push(createCubelet(0, 0, 0, 0x000000  , 0x000000, 0x000000, 0x000000, 0x000000, 0x000000 ));
-cubelets.push(createCubelet(0, 0, 1, 0x000000  , 0x000000, 0x000000, 0x000000, 0x0000ff, 0x000000 ));
-cubelets.push(createCubelet(0, 1, -1, 0x000000  , 0x000000, 0xffa500, 0x000000, 0x000000, 0x009b48 ));
-cubelets.push(createCubelet(0, 1, 0, 0x000000  , 0x000000, 0xffa500, 0x000000, 0x000000, 0x000000 ));
-cubelets.push(createCubelet(0, 1, 1, 0x000000  , 0x000000, 0xffa500, 0x000000, 0x0000ff, 0x000000 ));
-cubelets.push(createCubelet(1, -1, -1, 0xFFFF00  , 0x000000, 0x000000, 0xff0000, 0x000000, 0x009b48 ));
-cubelets.push(createCubelet(1, -1, 0, 0xFFFF00  , 0x000000, 0x000000, 0xff0000, 0x000000, 0x000000 ));
-cubelets.push(createCubelet(1, -1, 1, 0xFFFF00  , 0x000000, 0x000000, 0xff0000, 0x0000ff, 0x000000 ));
-cubelets.push(createCubelet(1, 0, -1, 0xFFFF00  , 0x000000, 0x000000, 0x000000, 0x000000, 0x009b48 ));
-cubelets.push(createCubelet(1, 0, 0, 0xFFFF00  , 0x000000, 0x000000, 0x000000, 0x000000, 0x000000 ));
-cubelets.push(createCubelet(1, 0, 1, 0xFFFF00  , 0x000000, 0x000000, 0x000000, 0x0000ff, 0x000000 ));
-cubelets.push(createCubelet(1, 1, -1, 0xFFFF00  , 0x000000, 0xffa500, 0x000000, 0x000000, 0x009b48 ));
-cubelets.push(createCubelet(1, 1, 0, 0xFFFF00  , 0x000000, 0xffa500, 0x000000, 0x000000, 0x000000 ));
-cubelets.push(createCubelet(1, 1, 1, 0xFFFF00  , 0x000000, 0xffa500, 0x000000, 0x0000ff, 0x000000 ));
+cubelets.push(createCubelet('wrg',-1, -1, -1,  0x000000  , 0xffffff, 0x000000, 0xff0000, 0x000000, 0x009b48));
+cubelets.push(createCubelet('wr', -1, -1, 0, 0x000000  , 0xffffff, 0x000000, 0xff0000, 0x000000, 0x000000));
+cubelets.push(createCubelet('wrb', -1, -1, 1, 0x000000  , 0xffffff, 0x000000, 0xff0000, 0x0000ff, 0x000000));
+cubelets.push(createCubelet('wg', -1, 0, -1, 0x000000  , 0xffffff, 0x000000, 0x000000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet('w', -1, 0, 0, 0x000000  , 0xffffff, 0x000000, 0x000000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet('wb', -1, 0, 1, 0x000000  , 0xffffff, 0x000000, 0x000000, 0x0000ff, 0x000000 ));
+cubelets.push(createCubelet('wog', -1, 1, -1, 0x000000  , 0xffffff, 0xffa500, 0x000000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet('wo', -1, 1, 0, 0x000000  , 0xffffff, 0xffa500, 0x000000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet('wob', -1, 1, 1, 0x000000  , 0xffffff, 0xffa500, 0x000000, 0x0000ff, 0x000000 ));
+cubelets.push(createCubelet('rg', 0, -1, -1, 0x000000  , 0x000000, 0x000000, 0xff0000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet('r', 0, -1, 0, 0x000000  , 0x000000, 0x000000, 0xff0000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet('rb', 0, -1, 1, 0x000000  , 0x000000, 0x000000, 0xff0000, 0x0000ff, 0x000000 ));
+cubelets.push(createCubelet('g', 0, 0, -1, 0x000000  , 0x000000, 0x000000, 0x000000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet('center', 0, 0, 0, 0x000000  , 0x000000, 0x000000, 0x000000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet('b', 0, 0, 1, 0x000000  , 0x000000, 0x000000, 0x000000, 0x0000ff, 0x000000 ));
+cubelets.push(createCubelet('og', 0, 1, -1, 0x000000  , 0x000000, 0xffa500, 0x000000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet('o', 0, 1, 0, 0x000000  , 0x000000, 0xffa500, 0x000000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet('ob', 0, 1, 1, 0x000000  , 0x000000, 0xffa500, 0x000000, 0x0000ff, 0x000000 ));
+cubelets.push(createCubelet('yrg', 1, -1, -1, 0xFFFF00  , 0x000000, 0x000000, 0xff0000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet('yr', 1, -1, 0, 0xFFFF00  , 0x000000, 0x000000, 0xff0000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet('yrb', 1, -1, 1, 0xFFFF00  , 0x000000, 0x000000, 0xff0000, 0x0000ff, 0x000000 ));
+cubelets.push(createCubelet('yg', 1, 0, -1, 0xFFFF00  , 0x000000, 0x000000, 0x000000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet('y', 1, 0, 0, 0xFFFF00  , 0x000000, 0x000000, 0x000000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet('yb', 1, 0, 1, 0xFFFF00  , 0x000000, 0x000000, 0x000000, 0x0000ff, 0x000000 ));
+cubelets.push(createCubelet('yog', 1, 1, -1, 0xFFFF00  , 0x000000, 0xffa500, 0x000000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet('yo', 1, 1, 0, 0xFFFF00  , 0x000000, 0xffa500, 0x000000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet('yob', 1, 1, 1, 0xFFFF00  , 0x000000, 0xffa500, 0x000000, 0x0000ff, 0x000000 ));
 
 cubelets.forEach(cubelet => scene.add(cubelet));
 
@@ -88,6 +90,8 @@ function bot()
             BottomGroup.add(cubelet);
         }
     });
+    scene.add(BottomGroup);
+
 }
 function right()
 {
@@ -97,6 +101,7 @@ function right()
             RightGroup.add(cubelet);
         }
     });
+    scene.add(RightGroup);
 }
 function left()
 {
@@ -106,60 +111,53 @@ function left()
             LeftGroup.add(cubelet);
         }
     });
+    scene.add(LeftGroup);
 }
 
-
-
-scene.add(BottomGroup);
-scene.add(TopGroup);
-scene.add(LeftGroup);
-scene.add(RightGroup);
-
-
-
-
+//scene.add(TopGroup);
 //rotation section
+
+
+
 function rotateLeft(clockwise) {
-    left();
+    left(); // Przygotowanie grupy
     const angle = clockwise ? Math.PI / 2 : -Math.PI / 2;
     LeftGroup.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), angle);
 }
+
 
 function rotateRight(clockwise) {
     right();
     const angle = clockwise ? Math.PI / 2 : -Math.PI / 2;
     RightGroup.rotateOnWorldAxis(new THREE.Vector3(0, 0, -1), angle);
+    console.log(RightGroup.children.map(c => c.position));
+
 }
 function rotateBottom(clockwise) {
     bot();
+    console.log(BottomGroup.children.map(c => c.position));
     const angle = clockwise ? Math.PI / 2 : -Math.PI / 2;
     BottomGroup.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), angle);
 }
 
-
-
 //Button section
 const rotateLeftButton = document.getElementById('rotateLeftButton');
 rotateLeftButton.addEventListener('click', () => {
-    console.log('Button clicked.');
     rotateLeft(true);
 });
 
 const rotateLeftcounter = document.getElementById('rotateLeftcounter');
 rotateLeftcounter.addEventListener('click', () => {
-    console.log('Button clicked.');
     rotateLeft(false);
 });
 
 const rotateRightButton = document.getElementById('rotateRightButton');
 rotateRightButton.addEventListener('click', () => {
-    console.log('Button clicked.');
     rotateRight(true);
 });
 
 const rotateBottomButton = document.getElementById('rotateBottomButton');
 rotateBottomButton.addEventListener('click', () => {
-    console.log('Button clicked.');
     rotateBottom(true);
 });
 
@@ -179,7 +177,7 @@ renderer.domElement.addEventListener('contextmenu', function (event) {
 
 
 function animate() {
-    //console.log('All cubelets positions:', cubelets.map(cubelet => cubelet.position));
+    //console.log('All cubelets positions:', cubelets.map(cubelet => cubelet.position))
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
 }

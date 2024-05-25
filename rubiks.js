@@ -81,22 +81,25 @@ function rotateLeft(clockwise) {
     leftCubelets.forEach(cubelet => {
         center.add(cubelet.position);
     });
+    center.divideScalar(leftCubelets.length);
+
     leftCubelets.forEach((cubelet, index) => {
-    cubelet.position.sub(center);
+        cubelet.position.sub(center);
 
-    // Rotate
-    let y = cubelet.position.y;
-    let z = cubelet.position.z;
-    let angle = clockwise ? -Math.PI / 2 : Math.PI / 2;
-    cubelet.position.y = parseFloat((y * Math.cos(angle) - z * Math.sin(angle)).toFixed(2));
-    cubelet.position.z = parseFloat((y * Math.sin(angle) + z * Math.cos(angle)).toFixed(2));
+        // Rotate
+        let y = cubelet.position.y;
+        let z = cubelet.position.z;
+        // Swap the rotation angles
+        let angle = clockwise ? Math.PI / 2 : Math.PI / 2;
+        cubelet.position.y = parseFloat((y * Math.cos(angle) - z * Math.sin(angle)).toFixed(2));
+        cubelet.position.z = parseFloat((y * Math.sin(angle) + z * Math.cos(angle)).toFixed(2));
 
-    // Rotate cubelet around its own axis
-    cubelet.rotateOnAxis(new THREE.Vector3(1, 0, 0), angle);
-    cubelet.position.add(center);
+        // Rotate cubelet around its own axis
+        cubelet.rotateOnWorldAxis(new THREE.Vector3(1, 0, 0), angle);
+        cubelet.position.add(center);
 
-    console.log(`Cubelet ${index} position after left rotation:`, cubelet.position);
-});
+        console.log(`Cubelet ${index} position after left rotation:`, cubelet.position);
+    });
 }
 
 function rotateBottom(clockwise) {
@@ -109,18 +112,75 @@ function rotateBottom(clockwise) {
     center.divideScalar(bottomCubelets.length);
 
     bottomCubelets.forEach((cubelet, index) => {
+    cubelet.position.sub(center);
+
+    let x = cubelet.position.x;
+    let z = cubelet.position.z;
+    // Swap the rotation angles
+    let angle = clockwise ? -Math.PI / 2 : Math.PI / 2;
+    cubelet.position.x = parseFloat((x * Math.cos(angle) - z * Math.sin(angle)).toFixed(2));
+    cubelet.position.z = parseFloat((x * Math.sin(angle) + z * Math.cos(angle)).toFixed(2));
+
+    cubelet.rotateOnWorldAxis(new THREE.Vector3(0, -1, 0), angle);
+    cubelet.position.add(center);
+
+    console.log(`Cubelet ${index} position after bottom rotation:`, cubelet.position);
+});
+}
+
+function rotateTop(clockwise) {
+    let topCubelets = cubelets.filter(cubelet => cubelet.position.y === 1);
+
+    let center = new THREE.Vector3();
+    topCubelets.forEach(cubelet => {
+        center.add(cubelet.position);
+    });
+    center.divideScalar(topCubelets.length);
+
+    topCubelets.forEach((cubelet, index) => {
         cubelet.position.sub(center);
-    
+
+        // Rotate
         let x = cubelet.position.x;
         let z = cubelet.position.z;
+        // Swap the rotation angles
         let angle = clockwise ? Math.PI / 2 : -Math.PI / 2;
         cubelet.position.x = parseFloat((x * Math.cos(angle) - z * Math.sin(angle)).toFixed(2));
         cubelet.position.z = parseFloat((x * Math.sin(angle) + z * Math.cos(angle)).toFixed(2));
-    
-        cubelet.rotateOnAxis(new THREE.Vector3(0, -1, 0), angle);
-            cubelet.position.add(center);
-    
-        console.log(`Cubelet ${index} position after bottom rotation:`, cubelet.position);
+
+        // Rotate cubelet around its own axis
+        cubelet.rotateOnWorldAxis(new THREE.Vector3(0, -1, 0), angle);
+        cubelet.position.add(center);
+
+        console.log(`Cubelet ${index} position after top rotation:`, cubelet.position);
+    });
+}
+
+function rotateRight(clockwise) {
+    let rightCubelets = cubelets.filter(cubelet => cubelet.position.x === 1);
+
+    let center = new THREE.Vector3();
+    rightCubelets.forEach(cubelet => {
+        center.add(cubelet.position);
+    });
+    center.divideScalar(rightCubelets.length);
+
+    rightCubelets.forEach((cubelet, index) => {
+        cubelet.position.sub(center);
+
+        // Rotate
+        let y = cubelet.position.y;
+        let z = cubelet.position.z;
+        // Swap the rotation angles
+        let angle = clockwise ? -Math.PI / 2 : Math.PI / 2;
+        cubelet.position.y = parseFloat((y * Math.cos(angle) - z * Math.sin(angle)).toFixed(2));
+        cubelet.position.z = parseFloat((y * Math.sin(angle) + z * Math.cos(angle)).toFixed(2));
+
+        // Rotate cubelet around its own axis
+        cubelet.rotateOnWorldAxis(new THREE.Vector3(1, 0, 0), angle);
+        cubelet.position.add(center);
+
+        console.log(`Cubelet ${index} position after right rotation:`, cubelet.position);
     });
 }
 
@@ -140,9 +200,29 @@ rotateRightButton.addEventListener('click', () => {
     rotateRight(true);
 });
 
+const rotateRightcounter = document.getElementById('rotateRightcounter');
+rotateRightcounter.addEventListener('click', () => {
+    rotateRight(false);
+});
+
 const rotateBottomButton = document.getElementById('rotateBottomButton');
 rotateBottomButton.addEventListener('click', () => {
     rotateBottom(true);
+});
+
+const rotateBottomButtoncounter = document.getElementById('rotateBottomButtoncounter');
+rotateBottomButtoncounter.addEventListener('click', () => {
+    rotateBottom(false);
+});
+
+const rotateTopButton = document.getElementById('rotateTopButton');
+rotateTopButton.addEventListener('click', () => {
+    rotateTop(true);
+});
+
+const rotateTopButtoncounter = document.getElementById('rotateTopButtoncounter');
+rotateTopButtoncounter.addEventListener('click', () => {
+    rotateTop(false);
 });
 
 //Camera section

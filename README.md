@@ -1,3 +1,4 @@
-1. dodać tween js
-2. dodać dobrą rotacje
-3. wszystko inne
+TODO
+1. Tween animation
+2. Algorithm LBL to solve cube
+3. Pretty UI

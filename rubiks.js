@@ -1,4 +1,3 @@
-
 import * as THREE from 'three';
 import { OrbitControls } from '../../../node_modules/three/examples/jsm/controls/OrbitControls.js';
 
@@ -7,6 +6,8 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
+scene.background = new THREE.Color(0x808080);
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLight);
@@ -35,109 +36,92 @@ function createCubelet(id, x, y, z, rightColor, leftColor, topColor, bottomColor
     return cubelet;
 }
 const cubelets = [];
-// black 0x000000 white 0xffffff red 0xff0000  yellow 0xFFFF00 blue 0x0000ff green 0x009b48 orange 0xffa500 
-cubelets.push(createCubelet('wrg',-1, -1, -1,  0x000000  , 0xffffff, 0x000000, 0xff0000, 0x000000, 0x009b48));
-cubelets.push(createCubelet('wr', -1, -1, 0, 0x000000  , 0xffffff, 0x000000, 0xff0000, 0x000000, 0x000000));
-cubelets.push(createCubelet('wrb', -1, -1, 1, 0x000000  , 0xffffff, 0x000000, 0xff0000, 0x0000ff, 0x000000));
-cubelets.push(createCubelet('wg', -1, 0, -1, 0x000000  , 0xffffff, 0x000000, 0x000000, 0x000000, 0x009b48 ));
-cubelets.push(createCubelet('w', -1, 0, 0, 0x000000  , 0xffffff, 0x000000, 0x000000, 0x000000, 0x000000 ));
-cubelets.push(createCubelet('wb', -1, 0, 1, 0x000000  , 0xffffff, 0x000000, 0x000000, 0x0000ff, 0x000000 ));
-cubelets.push(createCubelet('wog', -1, 1, -1, 0x000000  , 0xffffff, 0xffa500, 0x000000, 0x000000, 0x009b48 ));
-cubelets.push(createCubelet('wo', -1, 1, 0, 0x000000  , 0xffffff, 0xffa500, 0x000000, 0x000000, 0x000000 ));
-cubelets.push(createCubelet('wob', -1, 1, 1, 0x000000  , 0xffffff, 0xffa500, 0x000000, 0x0000ff, 0x000000 ));
-cubelets.push(createCubelet('rg', 0, -1, -1, 0x000000  , 0x000000, 0x000000, 0xff0000, 0x000000, 0x009b48 ));
-cubelets.push(createCubelet('r', 0, -1, 0, 0x000000  , 0x000000, 0x000000, 0xff0000, 0x000000, 0x000000 ));
-cubelets.push(createCubelet('rb', 0, -1, 1, 0x000000  , 0x000000, 0x000000, 0xff0000, 0x0000ff, 0x000000 ));
+// black 0x000000 white 0xffffff red 0xff0000  yellow 0xFFFF00 blue 0x0000ff green 0x009b48 orange 0xffa500 grey 0x808080 
+//top layer
+cubelets.push(createCubelet('oyg', -1, 1, -1, 0x000000  , 0xffa500, 0xFFFF00, 0x000000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet('oy', -1, 1, 0, 0x000000  , 0xffa500, 0xFFFF00, 0x000000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet('oyb', -1, 1, 1, 0x000000  , 0xffa500, 0xFFFF00, 0x000000, 0x0000ff, 0x000000 ));
+cubelets.push(createCubelet('ryg', 1, 1, -1, 0xff0000  , 0x000000, 0xFFFF00, 0x000000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet('rg', 1, 1, 0, 0xff0000  , 0x000000, 0xFFFF00, 0x000000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet('ryb', 1, 1, 1, 0xff0000  , 0x000000, 0xFFFF00, 0x000000, 0x0000ff, 0x000000 ));
+cubelets.push(createCubelet('yg', 0, 1, -1, 0x000000  , 0x000000, 0xFFFF00, 0x000000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet('y', 0, 1, 0, 0x000000  , 0x000000, 0xFFFF00, 0x000000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet('yb', 0, 1, 1, 0x000000  , 0x000000, 0xFFFF00, 0x000000, 0x0000ff, 0x000000 ));
+
+//middle
+cubelets.push(createCubelet('wg', -1, 0, -1, 0x000000  , 0xffa500, 0x000000, 0x000000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet('w', -1, 0, 0, 0x000000  , 0xffa500, 0x000000, 0x000000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet('wb', -1, 0, 1, 0x000000  , 0xffa500, 0x000000, 0x000000, 0x0000ff, 0x000000 ));
 cubelets.push(createCubelet('g', 0, 0, -1, 0x000000  , 0x000000, 0x000000, 0x000000, 0x000000, 0x009b48 ));
 cubelets.push(createCubelet('center', 0, 0, 0, 0x000000  , 0x000000, 0x000000, 0x000000, 0x000000, 0x000000 ));
 cubelets.push(createCubelet('b', 0, 0, 1, 0x000000  , 0x000000, 0x000000, 0x000000, 0x0000ff, 0x000000 ));
-cubelets.push(createCubelet('og', 0, 1, -1, 0x000000  , 0x000000, 0xffa500, 0x000000, 0x000000, 0x009b48 ));
-cubelets.push(createCubelet('o', 0, 1, 0, 0x000000  , 0x000000, 0xffa500, 0x000000, 0x000000, 0x000000 ));
-cubelets.push(createCubelet('ob', 0, 1, 1, 0x000000  , 0x000000, 0xffa500, 0x000000, 0x0000ff, 0x000000 ));
-cubelets.push(createCubelet('yrg', 1, -1, -1, 0xFFFF00  , 0x000000, 0x000000, 0xff0000, 0x000000, 0x009b48 ));
-cubelets.push(createCubelet('yr', 1, -1, 0, 0xFFFF00  , 0x000000, 0x000000, 0xff0000, 0x000000, 0x000000 ));
-cubelets.push(createCubelet('yrb', 1, -1, 1, 0xFFFF00  , 0x000000, 0x000000, 0xff0000, 0x0000ff, 0x000000 ));
-cubelets.push(createCubelet('yg', 1, 0, -1, 0xFFFF00  , 0x000000, 0x000000, 0x000000, 0x000000, 0x009b48 ));
-cubelets.push(createCubelet('y', 1, 0, 0, 0xFFFF00  , 0x000000, 0x000000, 0x000000, 0x000000, 0x000000 ));
-cubelets.push(createCubelet('yb', 1, 0, 1, 0xFFFF00  , 0x000000, 0x000000, 0x000000, 0x0000ff, 0x000000 ));
-cubelets.push(createCubelet('yog', 1, 1, -1, 0xFFFF00  , 0x000000, 0xffa500, 0x000000, 0x000000, 0x009b48 ));
-cubelets.push(createCubelet('yo', 1, 1, 0, 0xFFFF00  , 0x000000, 0xffa500, 0x000000, 0x000000, 0x000000 ));
-cubelets.push(createCubelet('yob', 1, 1, 1, 0xFFFF00  , 0x000000, 0xffa500, 0x000000, 0x0000ff, 0x000000 ));
+cubelets.push(createCubelet('yg', 1, 0, -1, 0xff0000  , 0x000000, 0x000000, 0x000000, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet('y', 1, 0, 0, 0xff0000  , 0x000000, 0x000000, 0x000000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet('yb', 1, 0, 1, 0xff0000  , 0x000000, 0x000000, 0x000000, 0x0000ff, 0x000000 ));
+
+//bottom section
+cubelets.push(createCubelet('wrg',-1, -1, -1,  0x000000  , 0xffa500, 0x000000, 0xffffff, 0x000000, 0x009b48));
+cubelets.push(createCubelet('wr', -1, -1, 0, 0x000000  , 0xffa500, 0x000000, 0xffffff, 0x000000, 0x000000));
+cubelets.push(createCubelet('wrb', -1, -1, 1, 0x000000  , 0xffa500, 0x000000, 0xffffff, 0x0000ff, 0x000000));
+cubelets.push(createCubelet('rg', 0, -1, -1, 0x000000  , 0x000000, 0x000000, 0xffffff, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet('r', 0, -1, 0, 0x000000  , 0x000000, 0x000000, 0xffffff, 0x000000, 0x000000 ));
+cubelets.push(createCubelet('rb', 0, -1, 1, 0x000000  , 0x000000, 0x000000, 0xffffff, 0x0000ff, 0x000000 ));
+cubelets.push(createCubelet('yrg', 1, -1, -1, 0xff0000  , 0x000000, 0x000000, 0xffffff, 0x000000, 0x009b48 ));
+cubelets.push(createCubelet('yr', 1, -1, 0, 0xff0000  , 0x000000, 0x000000, 0xffffff, 0x000000, 0x000000 ));
+cubelets.push(createCubelet('yrb', 1, -1, 1, 0xff0000  , 0x000000, 0x000000, 0xffffff, 0x0000ff, 0x000000 ));
 
 cubelets.forEach(cubelet => scene.add(cubelet));
 
-//grouping
-const LeftGroup = new THREE.Group();
-const RightGroup = new THREE.Group();
-const TopGroup = new THREE.Group();
-const BottomGroup = new THREE.Group();
-
-/*cubelets.forEach(cubelet => {
-    const { x, y, z } = cubelet.position;
-    if (y === -1) {
-        BottomGroup.add(cubelet);
-    } if (z === -1) {
-        LeftGroup.add(cubelet);
-    }if (z === 1) {
-        RightGroup.add(cubelet);
-    }
-}); */
-function bot()
-{
-    cubelets.forEach(cubelet => {
-        const { x, y, z } = cubelet.position;
-        if (y === -1) {
-            BottomGroup.add(cubelet);
-        }
-    });
-    scene.add(BottomGroup);
-
-}
-function right()
-{
-    cubelets.forEach(cubelet => {
-        const { x, y, z } = cubelet.position;
-        if (z === 1) {
-            RightGroup.add(cubelet);
-        }
-    });
-    scene.add(RightGroup);
-}
-function left()
-{
-    cubelets.forEach(cubelet => {
-        const { x, y, z } = cubelet.position;
-        if (z === -1) {
-            LeftGroup.add(cubelet);
-        }
-    });
-    scene.add(LeftGroup);
-}
-
-//scene.add(TopGroup);
-//rotation section
-
-
+    
 
 function rotateLeft(clockwise) {
-    left(); // Przygotowanie grupy
-    const angle = clockwise ? Math.PI / 2 : -Math.PI / 2;
-    LeftGroup.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), angle);
+    let leftCubelets = cubelets.filter(cubelet => cubelet.position.x === -1);
+
+    let center = new THREE.Vector3();
+    leftCubelets.forEach(cubelet => {
+        center.add(cubelet.position);
+    });
+    leftCubelets.forEach((cubelet, index) => {
+    cubelet.position.sub(center);
+
+    // Rotate
+    let y = cubelet.position.y;
+    let z = cubelet.position.z;
+    let angle = clockwise ? -Math.PI / 2 : Math.PI / 2;
+    cubelet.position.y = parseFloat((y * Math.cos(angle) - z * Math.sin(angle)).toFixed(2));
+    cubelet.position.z = parseFloat((y * Math.sin(angle) + z * Math.cos(angle)).toFixed(2));
+
+    // Rotate cubelet around its own axis
+    cubelet.rotateOnAxis(new THREE.Vector3(1, 0, 0), angle);
+    cubelet.position.add(center);
+
+    console.log(`Cubelet ${index} position after left rotation:`, cubelet.position);
+});
 }
 
-
-function rotateRight(clockwise) {
-    right();
-    const angle = clockwise ? Math.PI / 2 : -Math.PI / 2;
-    RightGroup.rotateOnWorldAxis(new THREE.Vector3(0, 0, -1), angle);
-    console.log(RightGroup.children.map(c => c.position));
-
-}
 function rotateBottom(clockwise) {
-    bot();
-    console.log(BottomGroup.children.map(c => c.position));
-    const angle = clockwise ? Math.PI / 2 : -Math.PI / 2;
-    BottomGroup.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), angle);
+    let bottomCubelets = cubelets.filter(cubelet => cubelet.position.y === -1);
+
+    let center = new THREE.Vector3();
+    bottomCubelets.forEach(cubelet => {
+        center.add(cubelet.position);
+    });
+    center.divideScalar(bottomCubelets.length);
+
+    bottomCubelets.forEach((cubelet, index) => {
+        cubelet.position.sub(center);
+    
+        let x = cubelet.position.x;
+        let z = cubelet.position.z;
+        let angle = clockwise ? Math.PI / 2 : -Math.PI / 2;
+        cubelet.position.x = parseFloat((x * Math.cos(angle) - z * Math.sin(angle)).toFixed(2));
+        cubelet.position.z = parseFloat((x * Math.sin(angle) + z * Math.cos(angle)).toFixed(2));
+    
+        cubelet.rotateOnAxis(new THREE.Vector3(0, -1, 0), angle);
+            cubelet.position.add(center);
+    
+        console.log(`Cubelet ${index} position after bottom rotation:`, cubelet.position);
+    });
 }
 
 //Button section

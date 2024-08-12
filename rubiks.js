@@ -1,12 +1,14 @@
-import * as THREE from 'three';
-import { OrbitControls } from '../../../node_modules/three/examples/jsm/controls/OrbitControls.js';
+import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+import { OrbitControls } from 'https://unpkg.com/three/examples/jsm/controls/OrbitControls.js';
 import { pushCubelets } from './Cube.js';
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth * 0.5 / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth / 2 , window.innerHeight);
 document.body.appendChild(renderer.domElement);
+const originalColors = new Map();
+
 
 scene.background = new THREE.Color(0x808080);
 
@@ -15,6 +17,17 @@ scene.add(ambientLight);
 
 const cubelets = pushCubelets();
 cubelets.forEach(cubelet => scene.add(cubelet));
+
+const webglContainer = document.getElementById('webgl-container');
+
+function setRendererSize() {
+    renderer.setSize(webglContainer.clientWidth, webglContainer.clientHeight);
+    camera.aspect = webglContainer.clientWidth / webglContainer.clientHeight;
+    camera.updateProjectionMatrix();
+}
+
+setRendererSize();
+webglContainer.appendChild(renderer.domElement);
 
 
 function rotateWall(wall, clockwise) {
@@ -79,7 +92,53 @@ function rotateWall(wall, clockwise) {
         .start();
 }
 
+const raycaster = new THREE.Raycaster();
+const faceNames = ['right', 'left', 'top', 'bottom', 'front', 'back'];
+const pointer = new THREE.Vector2();
+document.addEventListener('mousedown', onMouseDown);
 
+
+
+
+function onMouseDown(event) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    raycaster.setFromCamera(pointer, camera);
+
+    const intersects = raycaster.intersectObjects(scene.children, true);
+
+    if (intersects.length > 0) {
+        const clickedObject = intersects[0].object;
+        const intersect = intersects[0];
+        const faceIndex = getFaceIndexFromIntersection(clickedObject, intersect);
+        if (faceIndex >= 0 && faceIndex < faceNames.length) {
+            console.log('Clicked face:', faceNames[faceIndex]);
+            console.log(`Cubelet ID: ${clickedObject.userData.id}`);
+        } else {
+            console.error('Invalid face index:', faceIndex);
+        }
+    }
+}
+
+function getFaceIndexFromIntersection(object, intersect) {
+    if (object.geometry instanceof THREE.BoxGeometry) {
+        const localIntersect = object.worldToLocal(intersect.point.clone());
+        const size = object.geometry.parameters.width / 2;
+
+        //console.log("Local Intersect:", localIntersect);
+
+        const tolerance = 0.1;
+        if (Math.abs(localIntersect.x - size) < tolerance) return 0; // Right face
+        if (Math.abs(localIntersect.x + size) < tolerance) return 1; // Left face
+        if (Math.abs(localIntersect.y - size) < tolerance) return 2; // Top face
+        if (Math.abs(localIntersect.y + size) < tolerance) return 3; // Bottom face
+        if (Math.abs(localIntersect.z - size) < tolerance) return 4; // Front face
+        if (Math.abs(localIntersect.z + size) < tolerance) return 5; // Back face
+    }
+    return undefined;
+}
 
 
 
@@ -143,8 +202,9 @@ const rotateBackButtoncounter = document.getElementById('rotateBackButtoncounter
 rotateBackButtoncounter.addEventListener('click', () => {
     rotateWall('back', false);
 });
-camera.position.z = 10;
 
+
+camera.position.z = 10;
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enablePan = false;
 controls.enableDamping = true;
@@ -159,6 +219,7 @@ renderer.domElement.addEventListener('contextmenu', function (event) {
 
 function animate() {
     requestAnimationFrame(animate);
+    controls.update();
     renderer.render(scene, camera);
     TWEEN.update();
 

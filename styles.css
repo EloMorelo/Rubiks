@@ -1,0 +1,63 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    display: flex;
+    height: 100vh; /* Full viewport height */
+}
+
+#webgl-container {
+    flex: 1;
+    background-color: #000;
+    height: 100%; /* Ensure it takes full height */
+    overflow: hidden; /* Prevent scrollbars */
+}
+
+#controls {
+    flex: 1;
+    background-color: #f4f4f4;
+    padding: 0px;
+    overflow-y: auto;
+    height: 100%; /* Ensure it takes full height */
+    overflow-y: auto; /* Vertical scroll if needed */
+}
+
+button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #e7e7e7;
+    color: #333;
+    text-align: center;
+}
+
+button:hover {
+    background-color: #ddd;
+}
+
+button:active {
+    background-color: #ccc;
+}
+
+.gridtop {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    gap: 1px;
+    padding: 1px;
+    margin-top: 20px; /* Space between buttons and grid */
+}
+
+.cell {
+    background-color: #e8f626;
+    border: 1px solid #ccc;
+    width: 60px;  /* Set the size of each cell */
+    height: 60px;
+}

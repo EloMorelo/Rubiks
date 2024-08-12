@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from 'https://unpkg.com/three/build/three.module.js';
 
 
 //cubelet section
@@ -32,7 +32,7 @@ cubelets.push(createCubelet('oyg', -1, 1, -1, 0x000000  , 0xffa500, 0xFFFF00, 0x
 cubelets.push(createCubelet('oy', -1, 1, 0, 0x000000  , 0xffa500, 0xFFFF00, 0x000000, 0x000000, 0x000000 ));
 cubelets.push(createCubelet('oyb', -1, 1, 1, 0x000000  , 0xffa500, 0xFFFF00, 0x000000, 0x0000ff, 0x000000 ));
 cubelets.push(createCubelet('ryg', 1, 1, -1, 0xff0000  , 0x000000, 0xFFFF00, 0x000000, 0x000000, 0x009b48 ));
-cubelets.push(createCubelet('rg', 1, 1, 0, 0xff0000  , 0x000000, 0xFFFF00, 0x000000, 0x000000, 0x000000 ));
+cubelets.push(createCubelet('ry', 1, 1, 0, 0xff0000  , 0x000000, 0xFFFF00, 0x000000, 0x000000, 0x000000 ));
 cubelets.push(createCubelet('ryb', 1, 1, 1, 0xff0000  , 0x000000, 0xFFFF00, 0x000000, 0x0000ff, 0x000000 ));
 cubelets.push(createCubelet('yg', 0, 1, -1, 0x000000  , 0x000000, 0xFFFF00, 0x000000, 0x000000, 0x009b48 ));
 cubelets.push(createCubelet('y', 0, 1, 0, 0x000000  , 0x000000, 0xFFFF00, 0x000000, 0x000000, 0x000000 ));

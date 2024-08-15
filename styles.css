@@ -6,14 +6,14 @@ body, html {
 
 .container {
     display: flex;
-    height: 100vh; /* Full viewport height */
+    height: 100vh; 
 }
 
 #webgl-container {
     flex: 1;
     background-color: #000;
-    height: 100%; /* Ensure it takes full height */
-    overflow: hidden; /* Prevent scrollbars */
+    height: 100%; 
+    overflow: hidden; 
 }
 
 #controls {
@@ -21,8 +21,8 @@ body, html {
     background-color: #f4f4f4;
     padding: 0px;
     overflow-y: auto;
-    height: 100%; /* Ensure it takes full height */
-    overflow-y: auto; /* Vertical scroll if needed */
+    height: 100%; 
+    overflow-y: auto; 
 }
 
 button {
@@ -49,15 +49,42 @@ button:active {
 
 .gridtop {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    grid-template-columns: repeat(3, 1fr); 
     gap: 1px;
     padding: 1px;
-    margin-top: 20px; /* Space between buttons and grid */
+    margin-top: 20px; 
 }
 
 .cell {
     background-color: #e8f626;
     border: 1px solid #ccc;
-    width: 60px;  /* Set the size of each cell */
+    width: 60px;  
     height: 60px;
+}
+
+#workInProgress {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 20px;
+    color: white;
+    font-family: Arial, sans-serif;
+    z-index: 100; 
+}
+
+#socialLinks {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 100;
+}
+
+#socialLinks img {
+    width: 40px;
+    height: 40px;
+    margin-left: 10px;
+}
+
+#socialLinks a {
+    display: inline-block;
 }

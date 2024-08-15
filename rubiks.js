@@ -98,6 +98,7 @@ const pointer = new THREE.Vector2();
 document.addEventListener('mousedown', onMouseDown);
 
 
+let faceColor = 0xffffff;
 
 
 function onMouseDown(event) {
@@ -116,6 +117,8 @@ function onMouseDown(event) {
         if (faceIndex >= 0 && faceIndex < faceNames.length) {
             console.log('Clicked face:', faceNames[faceIndex]);
             console.log(`Cubelet ID: ${clickedObject.userData.id}`);
+
+            changeFaceColor(clickedObject, faceIndex, faceColor);
         } else {
             console.error('Invalid face index:', faceIndex);
         }
@@ -142,7 +145,120 @@ function getFaceIndexFromIntersection(object, intersect) {
 
 
 
+
+function changeFaceColor(cubelet, faceIndex, color) {
+    if (cubelet.material && cubelet.material.length > faceIndex) {
+        const originalColor = cubelet.material[faceIndex].color.getHex();
+        const blackColor = 0x000000;
+
+        if (originalColor === blackColor) {
+            console.log('Cannot change color of black face.');
+            return;
+        }
+
+        cubelet.material[faceIndex].color.set(color);
+    } else {
+        console.error('Could not change face color, invalid faceIndex:', faceIndex);
+    }
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+//primary white or yellow secondary red, blue, green, orange
+function findWallPiece(primary, secondary){
+    
+    for (const cubelet of cubelets) {
+        const { right, left, top, bottom, front, back } = getColorsFromCubelet(cubelet);
+        const nonBlackColors = [right, left, top, bottom, front, back].filter(color => color !== 0x000000);
+
+        if (nonBlackColors.length === 2 && nonBlackColors.includes(primary) && nonBlackColors.includes(secondary)) {
+            return cubelet;
+        }
+    }
+    return null;
+
+}
+
+function getColorsFromCubelet(cubelet) {
+    return {
+        right: cubelet.material[0].color.getHex(),
+        left: cubelet.material[1].color.getHex(),
+        top: cubelet.material[2].color.getHex(),
+        bottom: cubelet.material[3].color.getHex(),
+        front: cubelet.material[4].color.getHex(),
+        back: cubelet.material[5].color.getHex(),
+    };
+}
+
+//time to rotate a wall 100ms
+async function moveWallPiece(){
+    rotateWall('front', true);
+    await sleep(101);
+    rotateWall('right', false);
+}
+
+
+
+const edgePiece = findWallPiece(0xffffff,0xff0000);
+
+const test = document.getElementById('test');
+test.addEventListener('click', () => {
+//find wall piece -> check side centers if matching -> if yes rotate wall -> adjuct rotation and move wall to top layer -> rotate top layer and corresponding wall
+
+
+
+
+
+
+    if (edgePiece) {
+        const { x, y, z } = edgePiece.position;
+        console.log(`Found edge piece: ${edgePiece.userData.id}, Coordinates: (${x}, ${y}, ${z})`);
+        console.log('direction of white face:' + result.sign + result.axis);
+    } else {
+        console.log('Edge piece not found');
+    }
+});
+
+
+
+
+
+
+
+
 //Button section
+const YellowButton = document.getElementById('YellowButton');
+YellowButton.addEventListener('click', () => {
+    faceColor = 0xFFFF00;
+});
+
+const RedButton = document.getElementById('RedButton');
+RedButton.addEventListener('click', () => {
+    faceColor = 0xff0000;
+});
+
+const GreenButton = document.getElementById('GreenButton');
+GreenButton.addEventListener('click', () => {
+    faceColor = 0x009b48;
+});
+
+const BlueButton = document.getElementById('BlueButton');
+BlueButton.addEventListener('click', () => {
+    faceColor = 0x0000ff;
+});
+
+const WhiteButton = document.getElementById('WhiteButton');
+WhiteButton.addEventListener('click', () => {
+    faceColor = 0xffffff;
+});
+
+const OrangeButton = document.getElementById('OrangeButton');
+OrangeButton.addEventListener('click', () => {
+    faceColor = 0xffa500;
+});
+
 const rotateLeftButton = document.getElementById('rotateLeftButton');
 rotateLeftButton.addEventListener('click', () => {
     rotateWall('left', true);

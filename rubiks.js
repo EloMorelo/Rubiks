@@ -29,11 +29,10 @@ function setRendererSize() {
 setRendererSize();
 webglContainer.appendChild(renderer.domElement);
 
-
+let counter = 0;
 function rotateWall(wall, clockwise) {
     let cubeletsInWall;
     let axis, angle;
-
     switch(wall) {
         case 'left':
             cubeletsInWall = cubelets.filter(cubelet => cubelet.position.x === -1);
@@ -90,6 +89,9 @@ function rotateWall(wall, clockwise) {
             //console.log('Final positions:', cubeletsInWall.map(cubelet => cubelet.position.clone()));   
         })
         .start();
+        counter++;
+        console.log('count:', counter);
+
 }
 
 const raycaster = new THREE.Raycaster();
@@ -182,6 +184,22 @@ function findWallPiece(primary, secondary){
 
 }
 
+function findCornerPiece(primary, secondary, tertiary) {
+    for (const cubelet of cubelets) {
+        const { right, left, top, bottom, front, back } = getColorsFromCubelet(cubelet);
+        const nonBlackColors = [right, left, top, bottom, front, back].filter(color => color !== 0x000000);
+
+        if (nonBlackColors.length === 3 
+            && nonBlackColors.includes(primary) 
+            && nonBlackColors.includes(secondary) 
+            && nonBlackColors.includes(tertiary)) {
+            return cubelet;
+        }
+    }
+
+    return null;
+}
+
 function getColorsFromCubelet(cubelet) {
     return {
         right: cubelet.material[0].color.getHex(),
@@ -194,7 +212,7 @@ function getColorsFromCubelet(cubelet) {
 }
 
 
-//relateive to cubelet iteslf
+//relateive to world axis
 function checkColorDirection(cubelet, targetColor) {
     const tolerance = 0.001;
 
@@ -268,6 +286,11 @@ function isCubeletAtPosition(cubelet, xTarget, yTarget, zTarget) {
 
 
 async function solveWhiteCross() {
+    const WhiteCross = document.getElementById('WhiteCross');
+    WhiteCross.disabled = true;
+
+
+    try {
     const edgePieces = [
         { color1: 0xffffff, color2: 0xff0000, targetPos: { x: 1, y: -1, z: 0 } }, // White-Red
         { color1: 0xffffff, color2: 0x0000ff, targetPos: { x: 0, y: -1, z: 1 } }, // White-Blue
@@ -284,26 +307,24 @@ async function solveWhiteCross() {
         }
 
         await movePieceToTopLayer(cubelet);
-
-        //await rotateTopLayerToCorrectPosition(cubelet, piece.targetPos);
-
-        //await movePieceDownToCorrectPosition(cubelet, piece.targetPos);
+        await rotateTopLayerToCorrectPosition(cubelet, piece.targetPos);
+        await movePieceDownToCorrectPosition(cubelet);
     }
 
     console.log('White cross solved!');
+} catch (error) {
+    console.error('An error occurred while solving the white cross:', error);
+} finally {
+    
+    WhiteCross.disabled = false;
+}
 }
 
-// Move a piece to the top layer
 async function movePieceToTopLayer(cubelet) {
-    // Check if the cubelet is at the bottom layer (y = -1)
     if (cubelet.position.y === -1) 
     {
-        // Get the wall the cubelet is on based on its x and z position
         const wall = getCubeletWall(cubelet);
-        
-        // Rotate the wall once to start moving the cubelet to the top layer
-        if (wall !== 'unknown') {
-            console.log(`Cubelet is on the ${wall} wall. Rotating to bring it to the middle.`);
+                if (wall !== 'unknown') {
             await rotateWall(wall, true); 
             await sleep(200);
         }
@@ -312,13 +333,20 @@ async function movePieceToTopLayer(cubelet) {
         {
         const colorWall = getCubeletWallColorFace(cubelet);
         if (colorWall !== 'unknown') {
-            console.log(`Cubelet is on the ${colorWall} wall. Rotating to bring it to the middle.`);
             if(getRelativePositionOnWall(cubelet, colorWall) === 'left'){
                 await rotateWall(colorWall, true); 
+                await sleep(200);
+                rotateWall('top', false);
+                await sleep(200);
+                rotateWall(colorWall, false);
                 await sleep(200);
             }
             else if(getRelativePositionOnWall(cubelet, colorWall) === 'right'){
                 await rotateWall(colorWall, false); 
+                await sleep(200);
+                rotateWall('top', false);
+                await sleep(200);
+                rotateWall(colorWall, true);
                 await sleep(200);
             }
         }
@@ -326,18 +354,23 @@ async function movePieceToTopLayer(cubelet) {
     if (cubelet.position.y === 1 && checkColorDirection(cubelet, 0xffffff) !== '+y')
     {
         let whiteWall = getCubeletWallWhiteFace(cubelet);
+        console.log('whiteWall:', whiteWall);
         await rotateWall(whiteWall, false);
         await sleep(200);
-        console.log('111')
         const colorWall = getCubeletWallColorFace(cubelet);
+        console.log('colorWall:', colorWall);
         await rotateWall(colorWall, false);
         await sleep(200);
-        console.log('222')
+        //whiteWall = getCubeletWallWhiteFace(cubelet);
+        //console.log('whiteWall:', whiteWall);
+        //await rotateWall(whiteWall, true);
+        //await sleep(2000);
         whiteWall = getCubeletWallWhiteFace(cubelet);
         const saveWall = getCubeletWallColorFace(cubelet);
-        console.log('333')
+        console.log('whiteWall:', whiteWall);
         await rotateWall(whiteWall, false);
         await sleep(200);
+        console.log('saveWall:', saveWall);
         await rotateWall(saveWall, true);
         await sleep(200);
     }
@@ -348,21 +381,195 @@ async function movePieceToTopLayer(cubelet) {
 }
 
 
-
-
-
-
-
 async function rotateTopLayerToCorrectPosition(cubelet, targetPos) {
-    //while (!(cubelet.position.x === targetPos.x && cubelet.position.z === targetPos.z)) {
-        rotateWall('top', true); 
+    while (!(cubelet.position.x === targetPos.x && cubelet.position.z === targetPos.z)) {
+        await rotateWall('top', true); 
         await sleep(200);
-    //}
+    }
 }
 
-async function movePieceDownToCorrectPosition(cubelet, targetPos) {
+async function movePieceDownToCorrectPosition(cubelet) {
+    const wall = getCubeletWallColorFace(cubelet);
+    await rotateWall(wall, true);
+    await sleep(200);
+    await rotateWall(wall, true);
+    await sleep(200);
     
 }
+
+async function solveCorners() {
+    const WhiteCorners = document.getElementById('WhiteCorners');
+    WhiteCorners.disabled = true;
+    
+    try {
+    const cornerPieces = [
+        { color1: 0xffffff, color2: 0xff0000, color3: 0x0000ff, targetPos: { x: 1, y: -1, z: 1 } }, // White-Red-Blue
+        { color1: 0xffffff, color2: 0xff0000, color3: 0x009b48, targetPos: { x: 1, y: -1, z: -1 } }, // White-Red-Green
+        { color1: 0xffffff, color2: 0x009b48, color3: 0xffa500, targetPos: { x: -1, y: -1, z: -1 } }, // White-Green-Orange
+        { color1: 0xffffff, color2: 0xffa500, color3: 0x0000ff, targetPos: { x: -1, y: -1, z: 1 } }  // White-Orange-Red
+    ];
+    for(const piece of cornerPieces){
+        const cubelet = findCornerPiece(piece.color1, piece.color2, piece.color3);
+        if (isCubeletAtPosition(cubelet, piece.targetPos.x, piece.targetPos.y, piece.targetPos.z) && checkColorDirection(cubelet, piece.color1) === '-y') {
+            console.log(`Piece with colors ${piece.color1}, ${piece.color2}, and ${piece.color3} is already in the correct position.`);
+            continue;
+        }
+
+        await moveCornerPieceToTopLayer(cubelet,piece.targetPos);
+        await rotateCornerPieceToCorrectPosition(cubelet, piece.targetPos);
+        await moveCornerPieceDownToCorrectPosition(cubelet);
+    }
+
+}
+ catch (error) {
+    console.error('An error occurred while solving the white cross:', error);
+} finally {
+    
+    WhiteCorners.disabled = false;
+}
+}
+
+
+async function moveCornerPieceToTopLayer(cubelet,targetPos) {
+    if(cubelet.position.y === -1)
+        {
+        if(checkColorDirection(cubelet, 0xffffff) === '-y')
+            {
+                const RightWall = getRightWallCorner(cubelet);
+                await rotateWall(RightWall, true);
+                await sleep(200);
+                await rotateWall('top', true);
+                await sleep(200);
+                await rotateWall(RightWall, false);
+                await sleep(200);
+            }
+            else
+            {
+                const adjwall = getAdjacentWallToWhiteFace(cubelet);
+                const whitewall = getCubeletWallWhiteFace(cubelet);
+                if (getRelativePositionOnWall(cubelet, whitewall) === 'bottom-left-corner') {
+                    await rotateWall(adjwall.adjacentWall1, false);
+                    await sleep(200);
+                    await rotateWall('top', true);
+                    await sleep(200);
+                    await rotateWall(adjwall.adjacentWall1, true);
+                    await sleep(200);
+                }
+                else
+                {
+                    await rotateWall(adjwall.adjacentWall1, true);
+                    await sleep(200);
+                    await rotateWall('top', false);
+                    await sleep(200);
+                    await rotateWall(adjwall.adjacentWall1, false);
+                    await sleep(200);
+                }
+            }
+    }
+    if(cubelet.position.y === 1 && checkColorDirection(cubelet, 0xffffff) === '+y')
+    {  
+        rotateCornerPieceToCorrectPosition(cubelet, targetPos);
+        await sleep(200);
+        const RightWall = getRightWallCorner(cubelet);
+        await rotateWall(RightWall, true);
+        await sleep(200);
+        await rotateWall('top', true);
+        await sleep(200);
+        await rotateWall('top', true);
+        await sleep(200);
+        await rotateWall(RightWall, false);
+        await sleep(200);
+    }
+
+}
+
+async function rotateCornerPieceToCorrectPosition(cubelet, targetPos) {
+    while (!(cubelet.position.x === targetPos.x && cubelet.position.z === targetPos.z)) {
+        await rotateWall('top', true); 
+        await sleep(200);
+    }
+}
+
+async function moveCornerPieceDownToCorrectPosition(cubelet) {
+    const whiteWall = getCubeletWallWhiteFace(cubelet);
+    const adjwall = getAdjacentWallToWhiteFace(cubelet);
+    if(getRelativePositionOnWall(cubelet, whiteWall) === 'top-right-corner'){
+        await rotateWall('top',true);
+        await sleep(200);
+        await rotateWall(adjwall.adjacentWall1, true);
+        await sleep(200);
+        await rotateWall('top', false);
+        await sleep(200);
+        await rotateWall(adjwall.adjacentWall1, false);
+        await sleep(200);
+    }
+    else
+    {
+        await rotateWall('top',false);
+        await sleep(200);
+        await rotateWall(adjwall.adjacentWall1, false);
+        await sleep(200);
+        await rotateWall('top', true);
+        await sleep(200);
+        await rotateWall(adjwall.adjacentWall1, true);
+        await sleep(200);
+    }
+}
+function getAdjacentWallToWhiteFace(cubelet, whiteColor = 0xffffff) {
+    const whiteDirection = checkColorDirection(cubelet, whiteColor);
+    const { x, y, z } = cubelet.position;
+
+    switch (whiteDirection) {
+        case '+x': 
+            if (z === 1) return { adjacentWall1: 'front', adjacentWall2: 'top' };
+            if (z === -1) return { adjacentWall1: 'back', adjacentWall2: 'top' };
+            break;
+        case '-x': 
+            if (z === 1) return { adjacentWall1: 'front', adjacentWall2: 'bottom' };
+            if (z === -1) return { adjacentWall1: 'back', adjacentWall2: 'bottom' };
+            break;
+        case '+y': 
+            if (x === 1) return { adjacentWall1: 'right', adjacentWall2: 'null' };
+            if (x === -1) return { adjacentWall1: 'left', adjacentWall2: 'null' };
+            if (z === 1) return { adjacentWall1: 'front', adjacentWall2: 'null' };
+            if (z === -1) return { adjacentWall1: 'back', adjacentWall2: 'null' };
+            break;
+        case '-y':
+            if (x === 1) return { adjacentWall1: 'right', adjacentWall2: 'null' };
+            if (x === -1) return { adjacentWall1: 'left', adjacentWall2: 'null' };
+            if (z === 1) return { adjacentWall1: 'front', adjacentWall2: 'null' };
+            if (z === -1) return { adjacentWall1: 'back', adjacentWall2: 'null' };
+            break;
+        case '+z': 
+            if (x === 1) return { adjacentWall1: 'right', adjacentWall2: 'top' };
+            if (x === -1) return { adjacentWall1: 'left', adjacentWall2: 'top' };
+            break;
+        case '-z': 
+            if (x === 1) return { adjacentWall1: 'right', adjacentWall2: 'bottom' };
+            if (x === -1) return { adjacentWall1: 'left', adjacentWall2: 'bottom' };
+            break;
+    }
+
+    return 'unknown';
+}
+
+function getRightWallCorner(cubelet) {
+    const { x, y, z } = cubelet.position;
+
+    if (x === 1 && z === 1) {
+        return 'right';
+    } else if (x === 1 && z === -1) {
+        return 'back';
+    } else if (x === -1 && z === -1) {
+        return 'left';
+    } else if (x === -1 && z === 1) {
+        return 'front';
+    } else {
+        return 'unknown';
+    }
+}
+
+
 
 function getCubeletWallWhiteFace(cubelet, whiteColor = 0xffffff) {
     const whiteDirection = checkColorDirection(cubelet, whiteColor);
@@ -479,6 +686,10 @@ function getRelativePositionOnWall(cubelet, wall) {
 
     switch (wall) {
         case 'front':
+            if (y === 1 && x === 1) return 'top-right-corner';
+            if (y === 1 && x === -1) return 'top-left-corner';
+            if (y === -1 && x === 1) return 'bottom-right-corner';
+            if (y === -1 && x === -1) return 'bottom-left-corner';
             if (y === 1) return 'top';
             if (y === -1) return 'bottom';
             if (x === 1) return 'right';
@@ -486,6 +697,10 @@ function getRelativePositionOnWall(cubelet, wall) {
             break;
 
         case 'back':
+            if (y === 1 && x === -1) return 'top-right-corner';
+            if (y === 1 && x === 1) return 'top-left-corner';
+            if (y === -1 && x === -1) return 'bottom-right-corner';
+            if (y === -1 && x === 1) return 'bottom-left-corner';
             if (y === 1) return 'top';
             if (y === -1) return 'bottom';
             if (x === -1) return 'right'; 
@@ -493,6 +708,10 @@ function getRelativePositionOnWall(cubelet, wall) {
             break;
 
         case 'left':
+            if (y === 1 && z === 1) return 'top-right-corner';
+            if (y === 1 && z === -1) return 'top-left-corner';
+            if (y === -1 && z === 1) return 'bottom-right-corner';
+            if (y === -1 && z === -1) return 'bottom-left-corner';
             if (y === 1) return 'top';
             if (y === -1) return 'bottom';
             if (z === -1) return 'left'; 
@@ -500,6 +719,10 @@ function getRelativePositionOnWall(cubelet, wall) {
             break;
 
         case 'right':
+            if (y === 1 && z === -1) return 'top-right-corner';
+            if (y === 1 && z === 1) return 'top-left-corner';
+            if (y === -1 && z === -1) return 'bottom-right-corner';
+            if (y === -1 && z === 1) return 'bottom-left-corner';
             if (y === 1) return 'top';
             if (y === -1) return 'bottom';
             if (z === 1) return 'left';
@@ -507,6 +730,10 @@ function getRelativePositionOnWall(cubelet, wall) {
             break;
 
         case 'top':
+            if (z === -1 && x === 1) return 'top-right-corner';
+            if (z === -1 && x === -1) return 'top-left-corner';
+            if (z === 1 && x === 1) return 'bottom-right-corner';
+            if (z === 1 && x === -1) return 'bottom-left-corner';
             if (z === 1) return 'bottom';
             if (z === -1) return 'top';
             if (x === 1) return 'right';
@@ -514,6 +741,10 @@ function getRelativePositionOnWall(cubelet, wall) {
             break;
 
         case 'bottom':
+            if (z === 1 && x === -1) return 'top-left-corner';
+            if (z === 1 && x === 1) return 'top-right-corner';
+            if (z === -1 && x === -1) return 'bottom-left-corner';
+            if (z === -1 && x === 1) return 'bottom-right-corner';
             if (z === 1) return 'top';
             if (z === -1) return 'bottom';
             if (x === -1) return 'left';
@@ -528,26 +759,79 @@ function getRelativePositionOnWall(cubelet, wall) {
 }
 
 
+
+async function Randomzie()
+{
+    const Randomize = document.getElementById('Randomize');
+    Randomize.disabled = true;
+
+    try{
+    await sleep(200);
+    await rotateWall('right', true);
+    await sleep(200);
+    await rotateWall('top', true);
+    await sleep(200);
+    await rotateWall('front', true);
+    await sleep(200);
+    await rotateWall('left', true);
+    await sleep(200);
+    await rotateWall('back', true);
+    await sleep(200);
+    await rotateWall('bottom', true);
+    await sleep(200);
+    await rotateWall('right', true);
+    await sleep(200);
+    await rotateWall('top', true);
+    await sleep(200);
+    await rotateWall('front', true);
+    await sleep(200);
+    await rotateWall('left', true);
+    await sleep(200);
+    await rotateWall('back', true);
+    await sleep(200);
+    await rotateWall('bottom', true);
+    await sleep(200);
+    await rotateWall('right', true);
+    await sleep(200);
+    await rotateWall('front', true);
+    await sleep(200);
+    await rotateWall('front', true);
+    await sleep(200);
+    await rotateWall('left', true);
+    await sleep(200);
+    await rotateWall('top', true);
+    }
+    catch (error) {
+        console.error('An error occurred while randomizing the cube:', error);
+    } finally {
+        Randomize.disabled = false;
+    }
+}
+
+
+const Random = document.getElementById('Randomize');
+Random.addEventListener('click', () => {
+Randomzie();
+});
+
 const test = document.getElementById('test');
 test.addEventListener('click', () => {
-//find wall piece -> check side centers if matching -> if yes rotate wall -> adjuct rotation and move wall to top layer -> rotate top layer and corresponding wall
-
+    const WhiteBlueOrange = findCornerPiece(0xffffff, 0x0000ff, 0xffa500);
+    moveCornerPieceToTopLayer(WhiteBlueOrange);
 });
 
 
 
-
-
-const WhiteCross = document.getElementById('WhiteCross');
 WhiteCross.addEventListener('click', async () => {
-    const WhiteRedPiece = findWallPiece(0xffffff, 0xff0000);
-    const wallWithWhiteFace = getCubeletWallWhiteFace(WhiteRedPiece);
-    console.log(`The white face of the RedWhite piece is on the ${wallWithWhiteFace} wall.`);
-    movePieceToTopLayer(WhiteRedPiece);
-    //await movePieceToTopLayer(WhiteRedPiece);
+    solveWhiteCross();
+    await sleep(200);
+    console.log('count:', counter);
 });
 
-
+WhiteCorners.addEventListener('click', async () => {
+    solveCorners();
+    console.log('count:', counter);
+});
 
 
 //Button section

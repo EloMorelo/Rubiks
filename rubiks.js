@@ -468,7 +468,10 @@ async function moveCornerPieceToTopLayer(cubelet,targetPos) {
     }
     if(cubelet.position.y === 1 && checkColorDirection(cubelet, 0xffffff) === '+y')
     {  
-        rotateCornerPieceToCorrectPosition(cubelet, targetPos);
+        while (!(cubelet.position.x === targetPos.x && cubelet.position.z === targetPos.z)) {
+            await rotateWall('top', true); 
+            await sleep(200);
+        }
         await sleep(200);
         const RightWall = getRightWallCorner(cubelet);
         await rotateWall(RightWall, true);

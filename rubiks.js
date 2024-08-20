@@ -140,7 +140,17 @@ function getFaceIndexFromIntersection(object, intersect) {
     return undefined;
 }
 
+function getCubeletAtPosition(xTarget, yTarget, zTarget) {
+    for (const cubelet of cubelets) {
+        const { x, y, z } = cubelet.position;
 
+        if (x === xTarget && y === yTarget && z === zTarget) {
+            return cubelet;
+        }
+    }
+
+    return null;
+}
 
 
 function changeFaceColor(cubelet, faceIndex, color) {
@@ -608,6 +618,186 @@ async function MoveMiddleLayerDownToCorrectPosition(cubelet,color1,color2) {
         await MiddleToRight(wall.primaryWall,sidewall.rightWall);
     }
 }
+}
+
+
+async function SolveYellowCross() {
+    if (detectYellowDot()) {
+        console.log("Detected Yellow Dot. Applying algorithm for yellow dot...");
+        await applyYellowCrossAlgorithm();
+    }
+
+    if (detectYellowL()) {
+        await rotateTopToAlignL();
+        console.log("Detected Yellow L. Applying algorithm for yellow L...");
+        await applyYellowCrossAlgorithm();
+    }
+
+    if (detectYellowLine()) {
+        await rotateTopLayerForHorizontalLine();
+        console.log("Detected Yellow Line. Applying algorithm for yellow line...");
+        await applyYellowCrossAlgorithm();
+    }
+
+    if (detectYellowCross()) {
+        console.log("Detected Yellow Cross. The yellow face is solved!");
+    }
+}
+
+function detectYellowDot() {
+    const topCenter = getCubeletAtPosition(0, 1, 0);
+    if (checkColorDirection(topCenter, 0xffff00) === '+y') {
+        const yellowEdges = detectYellowEdges();
+        if (yellowEdges.length === 0) {
+            yellowEdges.length = 0;
+            return true;
+        }
+    }
+    return false;
+}
+
+function detectYellowL() {
+    const yellowEdges = detectYellowEdges();
+    if (yellowEdges.length === 2) {
+        const edge1 = yellowEdges[0];
+        const edge2 = yellowEdges[1];
+
+
+        if ((edge1.position.x !== edge2.position.x || edge1.position.z !== edge2.position.z) ||  edge1.position.y === 1 && edge2.position.y === 1) {
+            if((edge1.position.x !== 0 && edge2.position.x !== 0) && (edge1.position.z !== 0 && edge2.position.z !== 0))
+            {
+            console.log('Yellow L detected');
+            yellowEdges.length = 0;
+            return true;
+            }
+
+        }
+    }
+    return false;
+}
+
+function detectYellowLine() {
+    const yellowEdges = detectYellowEdges();
+    if (yellowEdges.length === 2) {
+        const edge1 = yellowEdges[0];
+        const edge2 = yellowEdges[1];
+        if ((edge1.position.z === edge2.position.z && edge1.position.x !== edge2.position.x) ||
+            (edge1.position.x === edge2.position.x && edge1.position.z !== edge2.position.z)) {
+            console.log('Yellow line detected');
+            yellowEdges.length = 0;
+            return true;
+        }
+    }
+    return false;
+}
+
+function detectYellowCross() {
+    const yellowEdges = detectYellowEdges();
+    if (yellowEdges.length === 4) {
+        return true;
+    }
+    return false;
+}
+
+function detectYellowEdges() {
+    const topEdges = [
+        { position: { x: 0, y: 1, z: 1 }, face: '+y' },  // Front edge
+        { position: { x: 1, y: 1, z: 0 }, face: '+y' },  // Right edge
+        { position: { x: 0, y: 1, z: -1 }, face: '+y' }, // Back edge
+        { position: { x: -1, y: 1, z: 0 }, face: '+y' }  // Left edge
+    ];
+
+    let yellowEdges = [];
+
+    for (const edge of topEdges) {
+        const cubelet = getCubeletAtPosition(edge.position.x, edge.position.y, edge.position.z);
+        if (checkColorDirection(cubelet, 0xffff00) === edge.face) {
+            yellowEdges.push(edge);
+        }
+    }
+    console.log('detectYellowEdges:');
+    console.log(yellowEdges);
+    return yellowEdges;
+}
+
+
+
+
+
+async function applyYellowCrossAlgorithm() {
+    await rotateWall('front', true);
+    await sleep(200);
+    await rotateWall('right', true);
+    await sleep(200);
+    await rotateWall('top', true);
+    await sleep(200);
+    await rotateWall('right', false);
+    await sleep(200);
+    await rotateWall('top', false);
+    await sleep(200);
+    await rotateWall('front', false);
+    await sleep(200);
+}
+
+async function rotateTopToAlignL() {
+    let yellowEdges = detectYellowEdges();
+
+    if (yellowEdges.length !== 2) {
+        console.error("Yellow L not detected");
+        return;
+    }
+
+    let edge1 = yellowEdges[0];
+    let edge2 = yellowEdges[1];
+
+    const TargetPos1 = 
+        { x: 0, y: 1, z: 1 };
+    const TargetPos2 = 
+        { x: 1, y: 1, z: 0 };
+
+
+    while(!((edge1.position.x === TargetPos1.x && edge1.position.z === TargetPos1.z) && (edge2.position.x === TargetPos2.x && edge2.position.z === TargetPos2.z)) || 
+    ((edge1.position.x === TargetPos2.x && edge1.position.z === TargetPos2.z) && (edge2.position.x === TargetPos1.x && edge2.position.z === TargetPos1.z)))
+    {
+        await rotateWall('top', true);
+        await sleep(200);
+        yellowEdges = detectYellowEdges();
+        edge1 = yellowEdges[0];
+        edge2 = yellowEdges[1];
+    }
+    yellowEdges.length = 0;
+    console.log("Yellow L is now facing left.");
+}
+
+async function rotateTopLayerForHorizontalLine() {
+
+    let yellowEdges = detectYellowEdges();
+
+    if (yellowEdges.length !== 2) {
+        console.error("Yellow line not detected");
+        return;
+    }
+
+    let edge1 = yellowEdges[0];
+    let edge2 = yellowEdges[1];
+
+    const TargetPos1 = 
+        { x: 1, y: 1, z: 0 };
+    const TargetPos2 = 
+        { x: -1, y: 1, z: 0 };
+
+
+    while(!( (edge1.position.x === TargetPos1.x && edge1.position.z === TargetPos1.z) && (edge2.position.x === TargetPos2.x && edge2.position.z === TargetPos2.z)) || 
+    ((edge1.position.x === TargetPos2.x && edge1.position.z === TargetPos2.z) && (edge2.position.x === TargetPos1.x && edge2.position.z === TargetPos1.z)))
+    {
+        await rotateWall('top', true);
+        await sleep(200);
+        yellowEdges = detectYellowEdges();
+        edge1 = yellowEdges[0];
+        edge2 = yellowEdges[1];
+    }
+    yellowEdges.length = 0;
+    
 }
 
 
@@ -1084,6 +1274,11 @@ function getRelativePositionOnWall(cubelet, wall) {
 
 
 
+const Resetbutton = document.getElementById('resetButton');
+Resetbutton.addEventListener('click', async () => {
+    await applyYellowCrossAlgorithm();
+});
+
 async function Randomzie()
 {
     const Randomize = document.getElementById('Randomize');
@@ -1138,8 +1333,20 @@ Random.addEventListener('click', () => {
 Randomzie();
 });
 
-const test = document.getElementById('test');
-test.addEventListener('click', async () => {
+const SolveMiddle = document.getElementById('SolveMiddle');
+SolveMiddle.addEventListener('click', async () => {
+    await SolveMiddleLayer();
+});
+
+
+const YelloCross = document.getElementById('YellowCross');
+YelloCross.addEventListener('click', async () => {
+    await SolveYellowCross();
+
+});
+
+const Solve = document.getElementById('Solve');
+Solve.addEventListener('click', async () => {
     await solveWhiteCross();
     await sleep(200);
     await solveWhiteCorners();
@@ -1147,6 +1354,7 @@ test.addEventListener('click', async () => {
     await SolveMiddleLayer();
 
 });
+
 
 
 

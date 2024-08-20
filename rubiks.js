@@ -70,7 +70,6 @@ function rotateWall(wall, clockwise) {
     cubeletsInWall.forEach(cubelet => {
         tempGroup.attach(cubelet);
     });
-    //console.log('Initial positions:', cubeletsInWall.map(cubelet => cubelet.position.clone()));
 
     let tween = new TWEEN.Tween({ kat: 0 })
         .to({ kat: angle }, 100)
@@ -86,11 +85,10 @@ function rotateWall(wall, clockwise) {
                 cubelet.updateMatrixWorld();
             });
             scene.remove(tempGroup);
-            //console.log('Final positions:', cubeletsInWall.map(cubelet => cubelet.position.clone()));   
         })
         .start();
         counter++;
-        console.log('count:', counter);
+        //console.log('count:', counter);
 
 }
 
@@ -117,13 +115,10 @@ function onMouseDown(event) {
         const intersect = intersects[0];
         const faceIndex = getFaceIndexFromIntersection(clickedObject, intersect);
         if (faceIndex >= 0 && faceIndex < faceNames.length) {
-            console.log('Clicked face:', faceNames[faceIndex]);
-            console.log(`Cubelet ID: ${clickedObject.userData.id}`);
             const targetColor = 0xffffff;
             checkColorDirection(clickedObject, targetColor);
             changeFaceColor(clickedObject, faceIndex, faceColor);
         } else {
-            console.error('Invalid face index:', faceIndex);
         }
     }
 }
@@ -133,7 +128,6 @@ function getFaceIndexFromIntersection(object, intersect) {
         const localIntersect = object.worldToLocal(intersect.point.clone());
         const size = object.geometry.parameters.width / 2;
 
-        console.log("Local Intersect:", localIntersect);
 
         const tolerance = 0.1;
         if (Math.abs(localIntersect.x - size) < tolerance) return 0; // Right face
@@ -155,13 +149,10 @@ function changeFaceColor(cubelet, faceIndex, color) {
         const blackColor = 0x000000;
 
         if (originalColor === blackColor) {
-            console.log('Cannot change color of black face.');
             return;
         }
 
         cubelet.material[faceIndex].color.set(color);
-    } else {
-        console.error('Could not change face color, invalid faceIndex:', faceIndex);
     }
 }
 
@@ -169,7 +160,6 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-//primary white or yellow secondary red, blue, green, orange
 function findWallPiece(primary, secondary){
     
     for (const cubelet of cubelets) {
@@ -244,12 +234,10 @@ function checkColorDirection(cubelet, targetColor) {
         if (Math.abs(materialColor - targetColor) < tolerance) {
             const worldNormal = localNormals[i].clone().applyMatrix4(worldMatrix).normalize();
             const dominantAxis = getDominantAxis(worldNormal);
-            console.log(`The color ${targetColor.toString(16)} on cubelet ${cubelet.userData.id} is facing ${dominantAxis}.`);
             return dominantAxis;
         }
     }
 
-    console.log(`The color ${targetColor.toString(16)} is not found on cubelet ${cubelet.userData.id}.`);
     return null;
 }
 
@@ -354,23 +342,15 @@ async function movePieceToTopLayer(cubelet) {
     if (cubelet.position.y === 1 && checkColorDirection(cubelet, 0xffffff) !== '+y')
     {
         let whiteWall = getCubeletWallWhiteFace(cubelet);
-        console.log('whiteWall:', whiteWall);
         await rotateWall(whiteWall, false);
         await sleep(200);
         const colorWall = getCubeletWallColorFace(cubelet);
-        console.log('colorWall:', colorWall);
         await rotateWall(colorWall, false);
         await sleep(200);
-        //whiteWall = getCubeletWallWhiteFace(cubelet);
-        //console.log('whiteWall:', whiteWall);
-        //await rotateWall(whiteWall, true);
-        //await sleep(2000);
         whiteWall = getCubeletWallWhiteFace(cubelet);
         const saveWall = getCubeletWallColorFace(cubelet);
-        console.log('whiteWall:', whiteWall);
         await rotateWall(whiteWall, false);
         await sleep(200);
-        console.log('saveWall:', saveWall);
         await rotateWall(saveWall, true);
         await sleep(200);
     }
@@ -397,7 +377,7 @@ async function movePieceDownToCorrectPosition(cubelet) {
     
 }
 
-async function solveCorners() {
+async function solveWhiteCorners() {
     const WhiteCorners = document.getElementById('WhiteCorners');
     WhiteCorners.disabled = true;
     
@@ -406,7 +386,7 @@ async function solveCorners() {
         { color1: 0xffffff, color2: 0xff0000, color3: 0x0000ff, targetPos: { x: 1, y: -1, z: 1 } }, // White-Red-Blue
         { color1: 0xffffff, color2: 0xff0000, color3: 0x009b48, targetPos: { x: 1, y: -1, z: -1 } }, // White-Red-Green
         { color1: 0xffffff, color2: 0x009b48, color3: 0xffa500, targetPos: { x: -1, y: -1, z: -1 } }, // White-Green-Orange
-        { color1: 0xffffff, color2: 0xffa500, color3: 0x0000ff, targetPos: { x: -1, y: -1, z: 1 } }  // White-Orange-Red
+        { color1: 0xffffff, color2: 0xffa500, color3: 0x0000ff, targetPos: { x: -1, y: -1, z: 1 } }  // White-Orange-Blue
     ];
     for(const piece of cornerPieces){
         const cubelet = findCornerPiece(piece.color1, piece.color2, piece.color3);
@@ -518,6 +498,242 @@ async function moveCornerPieceDownToCorrectPosition(cubelet) {
         await sleep(200);
     }
 }
+
+async function SolveMiddleLayer() {
+
+    const edgePieces = [
+        { color1: 0x009b48, color2: 0xff0000, targetPos: { x: 1, y: 0, z: -1 } }, // Green-Red
+        { color1: 0xff0000, color2: 0x0000ff, targetPos: { x: 1, y: 0, z: 1 } }, // Red-Blue
+        { color1: 0xffa500, color2: 0x009b48, targetPos: { x: -1, y: 0, z: -1 } }, // Orange-Green
+        { color1: 0xffa500, color2: 0x0000ff, targetPos: { x: -1, y: 0, z: 1 } }  // Blue-Orange
+    ];
+
+    for (const piece of edgePieces) {
+        const cubelet = findWallPiece(piece.color1, piece.color2);
+
+        if (isCubeletAtPosition(cubelet, piece.targetPos.x, piece.targetPos.y, piece.targetPos.z) && checkPieceIfMiddleMatch(cubelet, piece.color1)) {
+            console.log(`Piece with colors ${piece.color1} and ${piece.color2} is already in the correct position.`);
+            continue;
+        }
+        console.log(`------------------------------------Piece with colors ${piece.color1} and ${piece.color2} is currently Moving`);
+        await MoveMiddleLayerToTop(cubelet,piece.color1);
+        console.log('Middle Layer to top');
+        await RotateMiddleLayerToCorrectPosition(cubelet,piece.color1,piece.color2);
+        console.log('Middle Layer to correct position');
+        await MoveMiddleLayerDownToCorrectPosition(cubelet,piece.color1,piece.color2);
+        console.log('Middle Layer down to correct position');
+
+
+    }
+    
+
+}
+
+async function MiddleToLeft(primary,opposite){
+    await rotateWall('top', false); 
+    await sleep(200);
+    await rotateWall(opposite, false);
+    await sleep(200);
+    await rotateWall('top', true);
+    await sleep(200);
+    await rotateWall(opposite, true);
+    await sleep(200);
+    await rotateWall('top', true);
+    await sleep(200);
+    await rotateWall(primary, true);
+    await sleep(200);
+    await rotateWall('top', false);
+    await sleep(200);
+    await rotateWall(primary, false);
+    await sleep(200);
+}
+
+async function MiddleToRight(primary,opposite){
+    await rotateWall('top', true); 
+    await sleep(200);
+    await rotateWall(opposite, true);
+    await sleep(200);
+    await rotateWall('top', false);
+    await sleep(200);
+    await rotateWall(opposite, false);
+    await sleep(200);
+    await rotateWall('top', false);
+    await sleep(200);
+    await rotateWall(primary, false);
+    await sleep(200);
+    await rotateWall('top', true);
+    await sleep(200);
+    await rotateWall(primary, true);
+    await sleep(200);
+}
+
+async function MoveMiddleLayerToTop(cubelet,color1) {
+    if(cubelet.position.y === 0)
+    {
+        const wall = getCubeletWallMiddleFace(cubelet,color1);
+        if (wall.primaryWall !== 'unknown') {
+            if(getRelativePositionOnWall(cubelet, wall.primaryWall) === 'left'){
+                await MiddleToLeft(wall.primaryWall,wall.oppositeWall);
+            }
+            else if(getRelativePositionOnWall(cubelet, wall.primaryWall) === 'right'){
+                await MiddleToRight(wall.primaryWall,wall.oppositeWall);
+            }
+        }
+    }
+    
+}
+
+async function RotateMiddleLayerToCorrectPosition(cubelet,color1,color2) {
+    if(cubelet.position.y === 1)
+    {
+    while((doesFaceMatchCenter(cubelet,color1,color2))!=true){
+        await rotateWall('top',true);
+        await sleep(200);
+    }
+    }
+}
+
+async function MoveMiddleLayerDownToCorrectPosition(cubelet,color1,color2) {
+    if(cubelet.position.y === 1)
+    {
+    const { matchesLeft, matchesRight } = doesOtherFaceMatchSideWalls(cubelet, color1, color2);    
+    const wall = getCubeletWallMiddleFace(cubelet,color1);
+    const sidewall = CheckColorRightLeft(wall.primaryWall);
+    if(matchesLeft)
+    {
+        await MiddleToLeft(wall.primaryWall,sidewall.leftWall);
+    }
+    if(matchesRight)
+    {
+        await MiddleToRight(wall.primaryWall,sidewall.rightWall);
+    }
+}
+}
+
+
+
+function doesFaceMatchCenter(cubelet, color1, color2) {
+    const direction1 = checkColorDirection(cubelet, color1);
+    const direction2 = checkColorDirection(cubelet, color2);
+    let wall1 = getCubeletWallMiddleFace(cubelet, color1).primaryWall;
+    let wall2 = getCubeletWallMiddleFace(cubelet, color2).primaryWall;
+
+    const colorwall1 = CheckColorOfWall(wall1);
+    const colorwall2 = CheckColorOfWall(wall2);
+
+
+    if (direction1 === '+y') {
+        return colorwall2 === color2;
+    } else if (direction2 === '+y') {
+        return colorwall1 === color1;
+    }
+    
+    console.log('No match found.');
+    return false;
+}
+
+
+function CheckColorOfWall(wall){
+    if(wall === 'right')
+    {
+        return 0xff0000;
+    }
+    else if(wall === 'back')
+    {
+        return 0x009b48;
+    }
+    else if(wall === 'front')
+    {
+        return 0x0000ff;
+    }
+    else if(wall === 'left')
+    {
+        return 0xffa500;
+    }
+}
+
+function CheckColorRightLeft (wall)
+{
+    let leftWall = 'unknown';
+    let rightWall = 'unknown';
+
+    switch (wall){
+    case 'right':
+        leftWall = 'front';
+        rightWall = 'back';
+        break;
+    case 'left':
+        leftWall = 'back';
+        rightWall = 'front';
+        break;
+    case 'front':
+        leftWall = 'left';
+        rightWall = 'right';
+        break;
+    case 'back':
+        leftWall = 'right';
+        rightWall = 'left';
+        break;
+    default:
+        break;
+    }
+    return {leftWall, rightWall};
+}
+
+function doesOtherFaceMatchSideWalls(cubelet, primaryColor, otherColor) {
+    const primaryWall = getCubeletWallMiddleFace(cubelet, primaryColor).primaryWall;
+    const direction1 = checkColorDirection(cubelet, primaryColor);
+    const direction2 = checkColorDirection(cubelet, otherColor);
+    const { leftWall, rightWall } = CheckColorRightLeft(primaryWall);
+    const leftWallColor = CheckColorOfWall(leftWall);
+    const rightWallColor = CheckColorOfWall(rightWall);
+
+    if(direction1 === '+y')
+    {
+        const matchesLeft = leftWallColor === primaryColor;
+        const matchesRight = rightWallColor === primaryColor;
+        return { matchesLeft, matchesRight };
+    }
+    else if(direction2 === '+y')
+    {
+        const matchesLeft = leftWallColor === otherColor;
+        const matchesRight = rightWallColor === otherColor;
+        return { matchesLeft, matchesRight };
+    }
+
+
+}
+
+
+
+function checkPieceIfMiddleMatch(cubelet, color) {
+    const wall = getCubeletWallMiddleFace(cubelet, color);
+    switch (wall.primaryWall) {
+        case 'back':
+        if (color === 0x009b48) {
+            return true;
+        }
+        break;
+        case 'front':
+        if (color === 0x0000ff) {
+            return true;
+        }
+        break;
+        case 'left':
+        if (color === 0xffa500) {
+            return true;
+        }
+        break;
+        case 'right':
+        if (color === 0xff0000) {
+            return true;
+        }
+        break;
+        }
+    return false;
+}
+
+
 function getAdjacentWallToWhiteFace(cubelet, whiteColor = 0xffffff) {
     const whiteDirection = checkColorDirection(cubelet, whiteColor);
     const { x, y, z } = cubelet.position;
@@ -556,6 +772,7 @@ function getAdjacentWallToWhiteFace(cubelet, whiteColor = 0xffffff) {
     return 'unknown';
 }
 
+
 function getRightWallCorner(cubelet) {
     const { x, y, z } = cubelet.position;
 
@@ -571,7 +788,6 @@ function getRightWallCorner(cubelet) {
         return 'unknown';
     }
 }
-
 
 
 function getCubeletWallWhiteFace(cubelet, whiteColor = 0xffffff) {
@@ -667,6 +883,111 @@ function getCubeletWallColorFace(cubelet, whiteColor = 0xffffff) {
 
     return 'unknown';
 }
+
+function getCubeletWallMiddleFace(cubelet, color) {
+    const colorDirection = checkColorDirection(cubelet, color);
+    const { x, y, z } = cubelet.position;
+
+    let primaryWall = 'unknown';
+    let oppositeWall = 'unknown';
+
+    if (y === -1 && x === 1 && colorDirection === '-y') {
+        // primaryWall = 'bottom';
+        // oppositeWall = 'front';
+        primaryWall = 'front';
+        oppositeWall = 'bottom';
+    } else if (y === -1 && x === -1 && colorDirection === '-y') {
+        // primaryWall = 'bottom';
+        // oppositeWall = 'back';
+        primaryWall = 'back';
+        oppositeWall = 'bottom';
+    } else if (y === -1 && z === 1 && colorDirection === '-y') {
+        // primaryWall = 'bottom';
+        // oppositeWall = 'right';
+        primaryWall = 'right';
+        oppositeWall = 'bottom';
+    } else if (y === -1 && z === -1 && colorDirection === '-y') {
+        // primaryWall = 'bottom';
+        // oppositeWall = 'left';
+        primaryWall = 'left';
+        oppositeWall = 'bottom';
+    } else if (y === 1 && x === 1 && colorDirection === '+y') {
+        // primaryWall = 'top';
+        // oppositeWall = 'front';
+        primaryWall = 'right';
+        oppositeWall = 'top';
+    } else if (y === 1 && x === -1 && colorDirection === '+y') {
+        // primaryWall = 'top';
+        // oppositeWall = 'back';
+        primaryWall = 'left';
+        oppositeWall = 'top';
+    } else if (y === 1 && z === 1 && colorDirection === '+y') {
+        // primaryWall = 'top';
+        // oppositeWall = 'right';
+        primaryWall = 'front';
+        oppositeWall = 'top';
+    } else if (y === 1 && z === -1 && colorDirection === '+y') {    
+        // primaryWall = 'top';
+        // oppositeWall = 'left';
+        primaryWall = 'back';
+        oppositeWall = 'top';
+    } // ---------------------
+     else if (z === 1 && y === 0 && colorDirection === '-x') {
+        primaryWall = 'left';
+        oppositeWall = 'front';
+    } else if (z === 0 && y === 1 && colorDirection === '-x') {
+        primaryWall = 'left';
+        oppositeWall = 'top';
+    } else if (z === 0 && y === -1 && colorDirection === '-x') {
+        primaryWall = 'left';
+        oppositeWall = 'bottom';
+    } else if (z === -1 && y === 0 && colorDirection === '-x') {
+        primaryWall = 'left';
+        oppositeWall = 'back';
+    } //-------------------------
+    else if (z === 1 && y === 0 && colorDirection === '+x') {
+        primaryWall = 'right';
+        oppositeWall = 'front';
+    } else if (z === 0 && y === 1 && colorDirection === '+x') {
+        primaryWall = 'right';
+        oppositeWall = 'top';
+    } else if (z === 0 && y === -1 && colorDirection === '+x') {
+        primaryWall = 'right';
+        oppositeWall = 'bottom';
+    } else if (z === -1 && y === 0 && colorDirection === '+x') {
+        primaryWall = 'right';
+        oppositeWall = 'back';
+    } //-------------------------
+    else if (x === 1 && y === 0 && colorDirection === '-z') {
+        primaryWall = 'back';
+        oppositeWall = 'right';
+    } else if (x === 0 && y === 1 && colorDirection === '-z') {
+        primaryWall = 'back';
+        oppositeWall = 'top';
+    } else if (x === 0 && y === -1 && colorDirection === '-z') {
+        primaryWall = 'back';
+        oppositeWall = 'bottom';
+    } else if (x === -1 && y === 0 && colorDirection === '-z') {
+        primaryWall = 'back';
+        oppositeWall = 'left';
+    } //-------------------------
+    else if (x === 1 && y === 0 && colorDirection === '+z') {
+        primaryWall = 'front';
+        oppositeWall = 'right';
+    } else if (x === 0 && y === 1 && colorDirection === '+z') {
+        primaryWall = 'front';
+        oppositeWall = 'top';
+    } else if (x === 0 && y === -1 && colorDirection === '+z') {
+        primaryWall = 'front';
+        oppositeWall = 'bottom';
+    } else if (x === -1 && y === 0 && colorDirection === '+z') {
+        primaryWall = 'front';
+        oppositeWall = 'left';
+    } //-------------------------
+
+    return { primaryWall, oppositeWall };
+}
+
 
 function getCubeletWall(cubelet) {
     const { x, z } = cubelet.position;
@@ -818,9 +1139,13 @@ Randomzie();
 });
 
 const test = document.getElementById('test');
-test.addEventListener('click', () => {
-    const WhiteBlueOrange = findCornerPiece(0xffffff, 0x0000ff, 0xffa500);
-    moveCornerPieceToTopLayer(WhiteBlueOrange);
+test.addEventListener('click', async () => {
+    await solveWhiteCross();
+    await sleep(200);
+    await solveWhiteCorners();
+    await sleep(200);
+    await SolveMiddleLayer();
+
 });
 
 
@@ -832,7 +1157,7 @@ WhiteCross.addEventListener('click', async () => {
 });
 
 WhiteCorners.addEventListener('click', async () => {
-    solveCorners();
+    solveWhiteCorners();
     console.log('count:', counter);
 });
 

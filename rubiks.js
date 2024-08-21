@@ -72,7 +72,7 @@ async function rotateWall(wall, clockwise) {
     });
 
     let tween = new TWEEN.Tween({ kat: 0 })
-        .to({ kat: angle }, 100)
+        .to({ kat: angle }, 64)
         .onUpdate(({ kat }) => {
             tempGroup.setRotationFromAxisAngle(axis, kat);
         })
@@ -88,7 +88,7 @@ async function rotateWall(wall, clockwise) {
         })
         .start();
 
-        //await sleep(200);
+        await sleep(100);
         counter++;
         //console.log('count:', counter);
 
@@ -326,7 +326,6 @@ async function movePieceToTopLayer(cubelet) {
         const wall = getCubeletWall(cubelet);
                 if (wall !== 'unknown') {
             await rotateWall(wall, true); 
-            await sleep(200);
         }
     }
     if (cubelet.position.y === 0) 
@@ -335,19 +334,13 @@ async function movePieceToTopLayer(cubelet) {
         if (colorWall !== 'unknown') {
             if(getRelativePositionOnWall(cubelet, colorWall) === 'left'){
                 await rotateWall(colorWall, true); 
-                await sleep(200);
-                rotateWall('top', false);
-                await sleep(200);
-                rotateWall(colorWall, false);
-                await sleep(200);
+                await rotateWall('top', false);
+                await rotateWall(colorWall, false);
             }
             else if(getRelativePositionOnWall(cubelet, colorWall) === 'right'){
                 await rotateWall(colorWall, false); 
-                await sleep(200);
-                rotateWall('top', false);
-                await sleep(200);
-                rotateWall(colorWall, true);
-                await sleep(200);
+                await rotateWall('top', false);
+                await rotateWall(colorWall, true);
             }
         }
     }
@@ -355,16 +348,12 @@ async function movePieceToTopLayer(cubelet) {
     {
         let whiteWall = getCubeletWallWhiteFace(cubelet);
         await rotateWall(whiteWall, false);
-        await sleep(200);
         const colorWall = getCubeletWallColorFace(cubelet);
         await rotateWall(colorWall, false);
-        await sleep(200);
         whiteWall = getCubeletWallWhiteFace(cubelet);
         const saveWall = getCubeletWallColorFace(cubelet);
         await rotateWall(whiteWall, false);
-        await sleep(200);
         await rotateWall(saveWall, true);
-        await sleep(200);
     }
     else
     {
@@ -376,16 +365,13 @@ async function movePieceToTopLayer(cubelet) {
 async function rotateTopLayerToCorrectPosition(cubelet, targetPos) {
     while (!(cubelet.position.x === targetPos.x && cubelet.position.z === targetPos.z)) {
         await rotateWall('top', true); 
-        await sleep(200);
     }
 }
 
 async function movePieceDownToCorrectPosition(cubelet) {
     const wall = getCubeletWallColorFace(cubelet);
     await rotateWall(wall, true);
-    await sleep(200);
     await rotateWall(wall, true);
-    await sleep(200);
     
 }
 
@@ -429,11 +415,8 @@ async function moveCornerPieceToTopLayer(cubelet,targetPos) {
             {
                 const RightWall = getRightWallCorner(cubelet);
                 await rotateWall(RightWall, true);
-                await sleep(200);
                 await rotateWall('top', true);
-                await sleep(200);
                 await rotateWall(RightWall, false);
-                await sleep(200);
             }
             else
             {
@@ -441,20 +424,14 @@ async function moveCornerPieceToTopLayer(cubelet,targetPos) {
                 const whitewall = getCubeletWallWhiteFace(cubelet);
                 if (getRelativePositionOnWall(cubelet, whitewall) === 'bottom-left-corner') {
                     await rotateWall(adjwall.adjacentWall1, false);
-                    await sleep(200);
                     await rotateWall('top', true);
-                    await sleep(200);
                     await rotateWall(adjwall.adjacentWall1, true);
-                    await sleep(200);
                 }
                 else
                 {
                     await rotateWall(adjwall.adjacentWall1, true);
-                    await sleep(200);
                     await rotateWall('top', false);
-                    await sleep(200);
                     await rotateWall(adjwall.adjacentWall1, false);
-                    await sleep(200);
                 }
             }
     }
@@ -462,18 +439,12 @@ async function moveCornerPieceToTopLayer(cubelet,targetPos) {
     {  
         while (!(cubelet.position.x === targetPos.x && cubelet.position.z === targetPos.z)) {
             await rotateWall('top', true); 
-            await sleep(200);
         }
-        await sleep(200);
         const RightWall = getRightWallCorner(cubelet);
         await rotateWall(RightWall, true);
-        await sleep(200);
         await rotateWall('top', true);
-        await sleep(200);
         await rotateWall('top', true);
-        await sleep(200);
         await rotateWall(RightWall, false);
-        await sleep(200);
     }
 
 }
@@ -481,7 +452,6 @@ async function moveCornerPieceToTopLayer(cubelet,targetPos) {
 async function rotateCornerPieceToCorrectPosition(cubelet, targetPos) {
     while (!(cubelet.position.x === targetPos.x && cubelet.position.z === targetPos.z)) {
         await rotateWall('top', true); 
-        await sleep(200);
     }
 }
 
@@ -490,24 +460,16 @@ async function moveCornerPieceDownToCorrectPosition(cubelet) {
     const adjwall = getAdjacentWallToWhiteFace(cubelet);
     if(getRelativePositionOnWall(cubelet, whiteWall) === 'top-right-corner'){
         await rotateWall('top',true);
-        await sleep(200);
         await rotateWall(adjwall.adjacentWall1, true);
-        await sleep(200);
         await rotateWall('top', false);
-        await sleep(200);
         await rotateWall(adjwall.adjacentWall1, false);
-        await sleep(200);
     }
     else
     {
         await rotateWall('top',false);
-        await sleep(200);
         await rotateWall(adjwall.adjacentWall1, false);
-        await sleep(200);
         await rotateWall('top', true);
-        await sleep(200);
         await rotateWall(adjwall.adjacentWall1, true);
-        await sleep(200);
     }
 }
 
@@ -543,40 +505,24 @@ async function SolveMiddleLayer() {
 
 async function MiddleToLeft(primary,opposite){
     await rotateWall('top', false); 
-    await sleep(200);
     await rotateWall(opposite, false);
-    await sleep(200);
     await rotateWall('top', true);
-    await sleep(200);
     await rotateWall(opposite, true);
-    await sleep(200);
     await rotateWall('top', true);
-    await sleep(200);
     await rotateWall(primary, true);
-    await sleep(200);
     await rotateWall('top', false);
-    await sleep(200);
     await rotateWall(primary, false);
-    await sleep(200);
 }
 
 async function MiddleToRight(primary,opposite){
     await rotateWall('top', true); 
-    await sleep(200);
     await rotateWall(opposite, true);
-    await sleep(200);
     await rotateWall('top', false);
-    await sleep(200);
     await rotateWall(opposite, false);
-    await sleep(200);
     await rotateWall('top', false);
-    await sleep(200);
     await rotateWall(primary, false);
-    await sleep(200);
     await rotateWall('top', true);
-    await sleep(200);
     await rotateWall(primary, true);
-    await sleep(200);
 }
 
 async function MoveMiddleLayerToTop(cubelet,color1) {
@@ -600,7 +546,6 @@ async function RotateMiddleLayerToCorrectPosition(cubelet,color1,color2) {
     {
     while((doesFaceMatchCenter(cubelet,color1,color2))!=true){
         await rotateWall('top',true);
-        await sleep(200);
     }
     }
 }
@@ -725,17 +670,11 @@ function detectYellowEdges() {
 
 async function applyYellowCrossAlgorithm() {
     await rotateWall('front', true);
-    await sleep(200);
     await rotateWall('right', true);
-    await sleep(200);
     await rotateWall('top', true);
-    await sleep(200);
     await rotateWall('right', false);
-    await sleep(200);
     await rotateWall('top', false);
-    await sleep(200);
     await rotateWall('front', false);
-    await sleep(200);
 }
 
 async function rotateTopToAlignL() {
@@ -760,7 +699,6 @@ async function rotateTopToAlignL() {
     {
         console.log("Rotating top layer to align L...");
         await rotateWall('top', true);
-        await sleep(200);
         yellowEdges = detectYellowEdges();
         edge1 = yellowEdges[0];
         edge2 = yellowEdges[1];
@@ -792,7 +730,6 @@ async function rotateTopLayerForHorizontalLine() {
     ((edge1.position.x === TargetPos2.x && edge1.position.z === TargetPos2.z) && (edge2.position.x === TargetPos1.x && edge2.position.z === TargetPos1.z)))
     {
         await rotateWall('top', true);
-        await sleep(200);
         yellowEdges = detectYellowEdges();
         edge1 = yellowEdges[0];
         edge2 = yellowEdges[1];
@@ -802,8 +739,9 @@ async function rotateTopLayerForHorizontalLine() {
 }
 
 
-async function CheckYellowCrossAlignment() {
 
+
+async function CheckYellowCrossAlignment() {
     console.log('Yellow Edges:');
 
     const Pieces = [
@@ -811,33 +749,60 @@ async function CheckYellowCrossAlignment() {
         { color1: 0xffff00, color2: 0x0000ff, targetPos: { x: 0, y: 1, z: 1 } }, // Yellow-Blue
         { color1: 0xffff00, color2: 0x009b48, targetPos: { x: 0, y: 1, z: -1 } }, // Yellow-Green
         { color1: 0xffff00, color2: 0xffa500, targetPos: { x: -1, y: 1, z: 0 } }  // Yellow-Orange
-    ]
+    ];
 
+    let highest = 0;
     let correct = 0;
-    for(let i=0; i<3; i++)
-    {
+    let maxRotation = 0;
+    let correctCubelets = {};
+
+    for (let i = 0; i < 3; i++) { 
         correct = 0;
-        for(const piece of Pieces){
+        let currentCorrectCubelets = {}; 
+
+        for (let j = 0; j < Pieces.length; j++) {
+            const piece = Pieces[j];
             const cubelet = findWallPiece(piece.color1, piece.color2);
-            if(isCubeletAtPosition(cubelet, piece.targetPos.x, piece.targetPos.y, piece.targetPos.z) && checkPieceIfMiddleMatch(cubelet, piece.color2)){
+
+            if (isCubeletAtPosition(cubelet, piece.targetPos.x, piece.targetPos.y, piece.targetPos.z) && checkPieceIfMiddleMatch(cubelet, piece.color2)) {
                 correct++;
+                currentCorrectCubelets[`cubelet${correct}`] = cubelet;  
             }
         }
+
+        if (correct > highest) {
+            highest = correct;
+            maxRotation = i;
+            correctCubelets = currentCorrectCubelets;  
+        }
+
         await rotateWall('top', true);
-        await sleep(200);
-
+        await sleep(200); 
     }
-    console.log('Correct:', correct);
-    return correct;
 
-//check how many egdes match center of the side walls
-//if 4 edges match center of the side walls, then the yellow cross is solved
-//rotate 3 times to check if the edges match the center of the side walls and go back to the position with most matches
-//if 2 check if they are opposite or adjacent then rotate 
-//if opposite 2 times algorithm
-//if adjacent 1 time algorithm
+    console.log('Highest:', highest, 'Max Rotation:', maxRotation);
+    console.log('Correct cubelets:', correctCubelets);
+
+    for (let i = 0; i < (3 - maxRotation); i++) {
+        await rotateWall('top', false);
+        await sleep(200); 
+    }
+
+    return correctCubelets;
 }
 
+async function AllignYellowWalls() {
+    const Pieces = await CheckYellowCrossAlignment();
+    const pieceCount = Object.keys(Pieces).length;
+    if(pieceCount  === 2)
+    {
+        console.log('Length is 2');
+    }
+    else if(pieceCount  === 4)
+    {
+        console.log('Length is 4');
+    }
+}
 
 
 
@@ -1324,39 +1289,22 @@ async function Randomzie()
     Randomize.disabled = true;
 
     try{
-    await sleep(200);
     await rotateWall('right', true);
-    await sleep(200);
     await rotateWall('top', true);
-    await sleep(200);
     await rotateWall('front', true);
-    await sleep(200);
     await rotateWall('left', true);
-    await sleep(200);
     await rotateWall('back', true);
-    await sleep(200);
     await rotateWall('bottom', true);
-    await sleep(200);
     await rotateWall('right', true);
-    await sleep(200);
     await rotateWall('top', true);
-    await sleep(200);
     await rotateWall('front', true);
-    await sleep(200);
     await rotateWall('left', true);
-    await sleep(200);
     await rotateWall('back', true);
-    await sleep(200);
     await rotateWall('bottom', true);
-    await sleep(200);
     await rotateWall('right', true);
-    await sleep(200);
     await rotateWall('front', true);
-    await sleep(200);
     await rotateWall('front', true);
-    await sleep(200);
     await rotateWall('left', true);
-    await sleep(200);
     await rotateWall('top', true);
     }
     catch (error) {
@@ -1370,7 +1318,8 @@ async function Randomzie()
 const Random = document.getElementById('Randomize');
 Random.addEventListener('click', () => {
 //Randomzie();
-CheckYellowCrossAlignment();
+//CheckYellowCrossAlignment();
+AllignYellowWalls();
 });
 
 const SolveMiddle = document.getElementById('SolveMiddle');
@@ -1388,9 +1337,7 @@ YelloCross.addEventListener('click', async () => {
 const Solve = document.getElementById('Solve');
 Solve.addEventListener('click', async () => {
     await solveWhiteCross();
-    await sleep(200);
     await solveWhiteCorners();
-    await sleep(200);
     await SolveMiddleLayer();
 
 });
@@ -1400,7 +1347,6 @@ Solve.addEventListener('click', async () => {
 
 WhiteCross.addEventListener('click', async () => {
     solveWhiteCross();
-    await sleep(200);
     console.log('count:', counter);
 });
 

@@ -30,7 +30,7 @@ setRendererSize();
 webglContainer.appendChild(renderer.domElement);
 
 let counter = 0;
-function rotateWall(wall, clockwise) {
+async function rotateWall(wall, clockwise) {
     let cubeletsInWall;
     let axis, angle;
     switch(wall) {
@@ -87,6 +87,8 @@ function rotateWall(wall, clockwise) {
             scene.remove(tempGroup);
         })
         .start();
+
+        //await sleep(200);
         counter++;
         //console.log('count:', counter);
 
@@ -663,15 +665,12 @@ function detectYellowL() {
         const edge2 = yellowEdges[1];
 
 
-        if ((edge1.position.x !== edge2.position.x || edge1.position.z !== edge2.position.z) ||  edge1.position.y === 1 && edge2.position.y === 1) {
-            if((edge1.position.x !== 0 && edge2.position.x !== 0) && (edge1.position.z !== 0 && edge2.position.z !== 0))
+            if(!(edge1.position.x === 0 && edge2.position.x === 0) && !(edge1.position.z === 0 && edge2.position.z === 0))
             {
             console.log('Yellow L detected');
             yellowEdges.length = 0;
             return true;
             }
-
-        }
     }
     return false;
 }
@@ -715,8 +714,8 @@ function detectYellowEdges() {
             yellowEdges.push(edge);
         }
     }
-    console.log('detectYellowEdges:');
-    console.log(yellowEdges);
+    // console.log('detectYellowEdges:');
+    // console.log(yellowEdges);
     return yellowEdges;
 }
 
@@ -751,19 +750,21 @@ async function rotateTopToAlignL() {
     let edge2 = yellowEdges[1];
 
     const TargetPos1 = 
-        { x: 0, y: 1, z: 1 };
+        { x: 0, y: 1, z: -1 };
     const TargetPos2 = 
-        { x: 1, y: 1, z: 0 };
+        { x: -1, y: 1, z: 0 };
 
 
     while(!((edge1.position.x === TargetPos1.x && edge1.position.z === TargetPos1.z) && (edge2.position.x === TargetPos2.x && edge2.position.z === TargetPos2.z)) || 
     ((edge1.position.x === TargetPos2.x && edge1.position.z === TargetPos2.z) && (edge2.position.x === TargetPos1.x && edge2.position.z === TargetPos1.z)))
     {
+        console.log("Rotating top layer to align L...");
         await rotateWall('top', true);
         await sleep(200);
         yellowEdges = detectYellowEdges();
         edge1 = yellowEdges[0];
         edge2 = yellowEdges[1];
+        
     }
     yellowEdges.length = 0;
     console.log("Yellow L is now facing left.");
@@ -799,6 +800,44 @@ async function rotateTopLayerForHorizontalLine() {
     yellowEdges.length = 0;
     
 }
+
+
+async function CheckYellowCrossAlignment() {
+
+    console.log('Yellow Edges:');
+
+    const Pieces = [
+        { color1: 0xffff00, color2: 0xff0000, targetPos: { x: 1, y: 1, z: 0 } }, // Yellow-Red
+        { color1: 0xffff00, color2: 0x0000ff, targetPos: { x: 0, y: 1, z: 1 } }, // Yellow-Blue
+        { color1: 0xffff00, color2: 0x009b48, targetPos: { x: 0, y: 1, z: -1 } }, // Yellow-Green
+        { color1: 0xffff00, color2: 0xffa500, targetPos: { x: -1, y: 1, z: 0 } }  // Yellow-Orange
+    ]
+
+    let correct = 0;
+    for(let i=0; i<3; i++)
+    {
+        correct = 0;
+        for(const piece of Pieces){
+            const cubelet = findWallPiece(piece.color1, piece.color2);
+            if(isCubeletAtPosition(cubelet, piece.targetPos.x, piece.targetPos.y, piece.targetPos.z) && checkPieceIfMiddleMatch(cubelet, piece.color2)){
+                correct++;
+            }
+        }
+        await rotateWall('top', true);
+        await sleep(200);
+
+    }
+    console.log('Correct:', correct);
+    return correct;
+
+//check how many egdes match center of the side walls
+//if 4 edges match center of the side walls, then the yellow cross is solved
+//rotate 3 times to check if the edges match the center of the side walls and go back to the position with most matches
+//if 2 check if they are opposite or adjacent then rotate 
+//if opposite 2 times algorithm
+//if adjacent 1 time algorithm
+}
+
 
 
 
@@ -1330,7 +1369,8 @@ async function Randomzie()
 
 const Random = document.getElementById('Randomize');
 Random.addEventListener('click', () => {
-Randomzie();
+//Randomzie();
+CheckYellowCrossAlignment();
 });
 
 const SolveMiddle = document.getElementById('SolveMiddle');

@@ -2,6 +2,7 @@ import * as THREE from 'https://unpkg.com/three/build/three.module.js';
 import { OrbitControls } from 'https://unpkg.com/three/examples/jsm/controls/OrbitControls.js';
 import { pushCubelets } from './Cube.js';
 
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth * 0.5 / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -474,6 +475,10 @@ async function moveCornerPieceDownToCorrectPosition(cubelet) {
 }
 
 async function SolveMiddleLayer() {
+    const SolveMiddle = document.getElementById('SolveMiddle');
+    SolveMiddle.disabled = true;
+
+    try {
 
     const edgePieces = [
         { color1: 0x009b48, color2: 0xff0000, targetPos: { x: 1, y: 0, z: -1 } }, // Green-Red
@@ -499,7 +504,13 @@ async function SolveMiddleLayer() {
 
 
     }
-    
+}
+    catch (error) {
+        console.error('An error occurred while solving the middle layer:', error);
+    }
+    finally {
+        SolveMiddle.disabled = false;
+    }
 
 }
 
@@ -569,6 +580,10 @@ async function MoveMiddleLayerDownToCorrectPosition(cubelet,color1,color2) {
 
 
 async function SolveYellowCross() {
+    const YellowCross = document.getElementById('YellowCross');
+    YellowCross.disabled = true;
+
+    try {
     if (detectYellowDot()) {
         console.log("Detected Yellow Dot. Applying algorithm for yellow dot...");
         await applyYellowCrossAlgorithm();
@@ -589,6 +604,14 @@ async function SolveYellowCross() {
     if (detectYellowCross()) {
         console.log("Detected Yellow Cross. The yellow face is solved!");
     }
+    }
+    catch (error) {
+        console.error('An error occurred while solving the yellow cross:', error);
+    }
+    finally {
+        YellowCross.disabled = false;
+    }
+    
 }
 
 function detectYellowDot() {
@@ -756,7 +779,7 @@ async function CheckYellowCrossAlignment() {
     let maxRotation = 0;
     let correctCubelets = {};
 
-    for (let i = 0; i < 3; i++) { 
+    for (let i = 0; i < 4; i++) { 
         correct = 0;
         let currentCorrectCubelets = {}; 
 
@@ -783,7 +806,7 @@ async function CheckYellowCrossAlignment() {
     console.log('Highest:', highest, 'Max Rotation:', maxRotation);
     console.log('Correct cubelets:', correctCubelets);
 
-    for (let i = 0; i < (3 - maxRotation); i++) {
+    for (let i = 0; i < (4 - maxRotation); i++) {
         await rotateWall('top', false);
         await sleep(200); 
     }
@@ -792,19 +815,201 @@ async function CheckYellowCrossAlignment() {
 }
 
 async function AllignYellowWalls() {
+    const YellowCornersAlign = document.getElementById('YellowCornersAlign');
+    YellowCornersAlign.disabled = true;
+
+    try {
+
     const Pieces = await CheckYellowCrossAlignment();
     const pieceCount = Object.keys(Pieces).length;
     if(pieceCount  === 2)
     {
-        console.log('Length is 2');
-    }
-    else if(pieceCount  === 4)
+        const colordirection1 = getCubeletWallMiddleFace(Pieces.cubelet1, 0xffff00);
+        const colordirection2 = getCubeletWallMiddleFace(Pieces.cubelet2, 0xffff00);
+        console.log('colordirection1:', colordirection1);
+        console.log('colordirection2:', colordirection2);
+        if((Pieces.cubelet1.position.x === 0 && Pieces.cubelet2.position.x === 0) || (Pieces.cubelet1.position.z === 0 && Pieces.cubelet2.position.z === 0))
+        {
+            const adjwall = CheckColorRightLeft(colordirection1.primaryWall);
+            const adjwall2 = CheckColorRightLeft(adjwall.rightWall);
+            await YellowMiddleAlgorithm(adjwall2.rightWall);
+            await rotateWall('top', true);
+            await YellowMiddleAlgorithm(adjwall.leftWall);
+        }
+        else
+        {
+            console.log('Length is 2 and L');
+
+            const adjwalls = CheckColorRightLeft(colordirection1.primaryWall);
+            console.log('adjwalls:', adjwalls);
+            const leftWall = adjwalls.leftWall;
+            const rightWall = adjwalls.rightWall;
+            const primaryWall1 = colordirection1.primaryWall;
+            const primaryWall2 = colordirection2.primaryWall;
+            if(leftWall === primaryWall2)
+            {
+
+                console.log(leftWall);
+                await YellowMiddleAlgorithm(leftWall);
+                await rotateWall('top', true);
+                console.log ('Left Wall is correct');
+            }
+            if(rightWall === primaryWall2)
+            {
+                console.log(primaryWall1);
+                await YellowMiddleAlgorithm(primaryWall1);
+                await rotateWall('top', true);
+                console.log ('Right Wall is correct');
+            }
+        }
+
+    if(pieceCount  === 4)
     {
         console.log('Length is 4');
     }
 }
+    }
+    catch (error) {
+        console.error('An error occurred while solving the yellow cross:', error);
+    }
+    finally {
+        YellowCornersAlign.disabled = false;
+    }
+}
 
+async function YellowMiddleAlgorithm(wall) {
+    await rotateWall(wall, true);
+    await rotateWall('top', true);
+    await rotateWall(wall, false);
+    await rotateWall('top', true);
+    await rotateWall(wall, true);
+    await rotateWall('top', true);
+    await rotateWall('top', true);
+    await rotateWall(wall, false);
+    
+}
 
+async function SolveYellowCorners() {
+    const YellowCorners = document.getElementById('YellowCorners');
+    YellowCorners.disabled = true;
+
+    const edgePieces = [
+        { color1: 0xFFFF00, color2: 0xff0000, color3: 0x009b48, targetPos: { x: 1, y: 1, z: -1 } }, // Yellow-Red-Green
+        { color1: 0xFFFF00, color2: 0xff0000, color3: 0x0000ff, targetPos: { x: 1, y: 1, z: 1 } }, // Yellow-Red-Blue
+        { color1: 0xFFFF00, color2: 0x0000ff, color3: 0xffa500, targetPos: { x: -1, y: 1, z: 1 } }, // Yellow-Blue-Orange
+        { color1: 0xFFFF00, color2: 0x009b48, color3: 0xffa500, targetPos: { x: -1, y: 1, z: -1 } }  // Yellow-Green-Orange
+    ];
+    const correctCubelets = [];
+    function checkCorrectPositions() {
+        return edgePieces.filter(edge => {
+            const cubelet = findCornerPiece(edge.color1, edge.color2, edge.color3);
+            if (isCubeletAtPosition(cubelet, edge.targetPos.x, edge.targetPos.y, edge.targetPos.z)) {
+                console.log(`Piece with colors ${edge.color1}, ${edge.color2}, and ${edge.color3} is already in the correct position.`);
+                correctCubelets.push(cubelet);
+                return true;
+            }
+            return false;
+        });
+    }
+    let correct = checkCorrectPositions().length;
+
+    if (correct === 0) {
+        await SwapYellowCorners('front');
+        correct = checkCorrectPositions().length;
+    }
+
+    if (correct === 0) {
+        await SwapYellowCorners('front');
+        correct = checkCorrectPositions().length;
+    }
+
+    if (correct === 1) {
+        const rtccubelet = correctCubelets[0];
+        const wall = CornerTwoWalls(rtccubelet);
+        await SwapYellowCorners(wall.front);
+    }
+
+    if (correct === 1) {
+        const rtccubelet = correctCubelets[0];
+        const wall = CornerTwoWalls(rtccubelet);
+        await SwapYellowCorners(wall.front);
+    }
+
+    try {
+
+    }
+    catch (error) {
+        console.error('An error occurred while solving the yellow corners:', error);
+    }
+    finally {
+        YellowCorners.disabled = false;
+    }
+}
+
+async function AlignYellowCorners() {
+    const YellowCornersAlign = document.getElementById('YellowCornersAlign');
+    YellowCornersAlign.disabled = true;
+
+    try {
+        const cornerPieces = [
+            { color1: 0xffff00, color2: 0xff0000, color3: 0x009b48, targetPos: { x: 1, y: 1, z: -1 } }, // Yellow-Red-Green
+            { color1: 0xffff00, color2: 0x009b48, color3: 0xffa500, targetPos: { x: -1, y: 1, z: -1 } },  // Yellow-Green-Orange
+            { color1: 0xffff00, color2: 0x0000ff, color3: 0xffa500, targetPos: { x: -1, y: 1, z: 1 } },  // Yellow-Blue-Orange
+            { color1: 0xffff00, color2: 0xff0000, color3: 0x0000ff, targetPos: { x: 1, y: 1, z: 1 } }  // Yellow-Red-Blue
+        ];
+
+        const correctRotation = '+y';
+        let Rightwall = null;
+        for (let i = 0; i < 4; i++) { 
+            const piece = cornerPieces[i];
+            const cubelet = findCornerPiece(piece.color1, piece.color2, piece.color3);
+            let rotation = checkColorDirection(cubelet, 0xffff00);
+            if (rotation !== correctRotation) {
+                if(!Rightwall)
+                {
+                    const walls = CornerTwoWalls(cubelet);
+                    Rightwall = walls.right;
+                }
+            }
+            while (rotation !== correctRotation) {
+                await RDRD(Rightwall);
+                await sleep(500); 
+                rotation = await checkColorDirection(cubelet, 0xffff00); 
+                console.log('Rotation:', rotation); 
+            }
+            if(Rightwall !== null)
+            {
+            await rotateWall('top', true);
+            await sleep(500); 
+            }
+        }
+
+        console.log('All yellow corners are correctly oriented.');
+
+    } catch (error) {
+        console.error('An error occurred while aligning the yellow edges:', error);
+    } finally {
+        YellowCornersAlign.disabled = false;
+    }
+}
+
+async function RDRD(wall) {
+    await rotateWall(wall, false);
+    await rotateWall('bottom', false);
+    await rotateWall(wall, true);
+    await rotateWall('bottom', true);
+}
+async function SwapYellowCorners(front) {
+    const adjwall = CheckColorRightLeft(front);
+    await rotateWall('top', true);
+    await rotateWall(adjwall.rightWall, true);
+    await rotateWall('top', false);
+    await rotateWall(adjwall.leftWall, false);
+    await rotateWall('top', true);
+    await rotateWall(adjwall.rightWall, false);
+    await rotateWall('top', false);
+    await rotateWall(adjwall.leftWall, true);
+}
 
 function doesFaceMatchCenter(cubelet, color1, color2) {
     const direction1 = checkColorDirection(cubelet, color1);
@@ -983,6 +1188,25 @@ function getRightWallCorner(cubelet) {
     }
 }
 
+function CornerTwoWalls(cubelet)
+{
+    const { x, y, z } = cubelet.position;
+    if (x === 1 && z === 1) {
+        return {front:'front', right: 'right'};
+    }
+    else if (x === 1 && z === -1) {
+            return {front:'right', right: 'back'};
+    }
+    else if (x === -1 && z === -1) {
+            return {front:'back', right: 'left'};
+    }
+    else if (x === -1 && z === 1) {
+            return {front:'left', right: 'front'};
+    }
+    else {
+        return 'unknown';
+    }
+}
 
 function getCubeletWallWhiteFace(cubelet, whiteColor = 0xffffff) {
     const whiteDirection = checkColorDirection(cubelet, whiteColor);
@@ -1316,29 +1540,43 @@ async function Randomzie()
 
 
 const Random = document.getElementById('Randomize');
-Random.addEventListener('click', () => {
-//Randomzie();
-//CheckYellowCrossAlignment();
-AllignYellowWalls();
+Random.addEventListener('click', async () => {
+    await Randomzie();
 });
 
-const SolveMiddle = document.getElementById('SolveMiddle');
 SolveMiddle.addEventListener('click', async () => {
     await SolveMiddleLayer();
 });
 
 
-const YelloCross = document.getElementById('YellowCross');
-YelloCross.addEventListener('click', async () => {
+YellowCross.addEventListener('click', async () => {
     await SolveYellowCross();
 
 });
+
+YellowCrossAlign.addEventListener('click', async () => {
+    await AllignYellowWalls();
+});
+
+YellowCorners.addEventListener('click', async () => {
+    await SolveYellowCorners()
+});
+
+YellowCornersAlign.addEventListener('click', async () => {
+    await AlignYellowCorners();
+});
+
+
 
 const Solve = document.getElementById('Solve');
 Solve.addEventListener('click', async () => {
     await solveWhiteCross();
     await solveWhiteCorners();
     await SolveMiddleLayer();
+    await SolveYellowCross();
+    await AllignYellowWalls();
+    await SolveYellowCorners();
+    await AllignYellowCorners();
 
 });
 

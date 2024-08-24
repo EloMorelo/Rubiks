@@ -285,7 +285,7 @@ function isCubeletAtPosition(cubelet, xTarget, yTarget, zTarget) {
     return position.x === xTarget && position.y === yTarget && position.z === zTarget;
 }
 
-
+// 1. ----solve white cross----
 async function solveWhiteCross() {
     const WhiteCross = document.getElementById('WhiteCross');
     WhiteCross.disabled = true;
@@ -376,6 +376,7 @@ async function movePieceDownToCorrectPosition(cubelet) {
     
 }
 
+// 2. ----solve white corners----
 async function solveWhiteCorners() {
     const WhiteCorners = document.getElementById('WhiteCorners');
     WhiteCorners.disabled = true;
@@ -474,6 +475,8 @@ async function moveCornerPieceDownToCorrectPosition(cubelet) {
     }
 }
 
+
+// 3. ----solve middle layer----
 async function SolveMiddleLayer() {
     const SolveMiddle = document.getElementById('SolveMiddle');
     SolveMiddle.disabled = true;
@@ -579,6 +582,8 @@ async function MoveMiddleLayerDownToCorrectPosition(cubelet,color1,color2) {
 }
 
 
+
+// 4. ----solve yellow cross----
 async function SolveYellowCross() {
     const YellowCross = document.getElementById('YellowCross');
     YellowCross.disabled = true;
@@ -800,7 +805,6 @@ async function CheckYellowCrossAlignment() {
         }
 
         await rotateWall('top', true);
-        await sleep(200); 
     }
 
     console.log('Highest:', highest, 'Max Rotation:', maxRotation);
@@ -808,15 +812,15 @@ async function CheckYellowCrossAlignment() {
 
     for (let i = 0; i < (4 - maxRotation); i++) {
         await rotateWall('top', false);
-        await sleep(200); 
     }
 
     return correctCubelets;
 }
 
+// 5. ----align yellow corners----
 async function AllignYellowWalls() {
-    const YellowCornersAlign = document.getElementById('YellowCornersAlign');
-    YellowCornersAlign.disabled = true;
+    const YellowCrossAlign = document.getElementById('YellowCornersAlign');
+    YellowCrossAlign.disabled = true;
 
     try {
 
@@ -826,22 +830,21 @@ async function AllignYellowWalls() {
     {
         const colordirection1 = getCubeletWallMiddleFace(Pieces.cubelet1, 0xffff00);
         const colordirection2 = getCubeletWallMiddleFace(Pieces.cubelet2, 0xffff00);
-        console.log('colordirection1:', colordirection1);
-        console.log('colordirection2:', colordirection2);
         if((Pieces.cubelet1.position.x === 0 && Pieces.cubelet2.position.x === 0) || (Pieces.cubelet1.position.z === 0 && Pieces.cubelet2.position.z === 0))
         {
             const adjwall = CheckColorRightLeft(colordirection1.primaryWall);
-            const adjwall2 = CheckColorRightLeft(adjwall.rightWall);
-            await YellowMiddleAlgorithm(adjwall2.rightWall);
+            const rightwall = adjwall.rightWall;
+            const adjwall2 = CheckColorRightLeft(colordirection2.primaryWall);
+            const rightwall2 = adjwall2.rightWall;
             await rotateWall('top', true);
-            await YellowMiddleAlgorithm(adjwall.leftWall);
+            await YellowMiddleAlgorithm(rightwall);
+            await rotateWall('top', true);
+            await YellowMiddleAlgorithm(rightwall2);
+            await rotateWall('top', true);
         }
         else
         {
-            console.log('Length is 2 and L');
-
             const adjwalls = CheckColorRightLeft(colordirection1.primaryWall);
-            console.log('adjwalls:', adjwalls);
             const leftWall = adjwalls.leftWall;
             const rightWall = adjwalls.rightWall;
             const primaryWall1 = colordirection1.primaryWall;
@@ -852,20 +855,18 @@ async function AllignYellowWalls() {
                 console.log(leftWall);
                 await YellowMiddleAlgorithm(leftWall);
                 await rotateWall('top', true);
-                console.log ('Left Wall is correct');
             }
             if(rightWall === primaryWall2)
             {
                 console.log(primaryWall1);
                 await YellowMiddleAlgorithm(primaryWall1);
                 await rotateWall('top', true);
-                console.log ('Right Wall is correct');
             }
         }
 
     if(pieceCount  === 4)
     {
-        console.log('Length is 4');
+        console.log('All corners are already aligned.');
     }
 }
     }
@@ -873,7 +874,7 @@ async function AllignYellowWalls() {
         console.error('An error occurred while solving the yellow cross:', error);
     }
     finally {
-        YellowCornersAlign.disabled = false;
+        YellowCrossAlign.disabled = false;
     }
 }
 
@@ -889,6 +890,7 @@ async function YellowMiddleAlgorithm(wall) {
     
 }
 
+//6. ----solve yellow corners----this needs fixing
 async function SolveYellowCorners() {
     const YellowCorners = document.getElementById('YellowCorners');
     YellowCorners.disabled = true;
@@ -912,27 +914,33 @@ async function SolveYellowCorners() {
         });
     }
     let correct = checkCorrectPositions().length;
-
     if (correct === 0) {
+        console.log('No yellow corners are in the correct position 1.');
         await SwapYellowCorners('front');
         correct = checkCorrectPositions().length;
     }
 
     if (correct === 0) {
+        console.log('No yellow corners are in the correct position 2.');
         await SwapYellowCorners('front');
         correct = checkCorrectPositions().length;
     }
 
     if (correct === 1) {
+        console.log('One yellow corner is in the correct position 1.');
         const rtccubelet = correctCubelets[0];
         const wall = CornerTwoWalls(rtccubelet);
         await SwapYellowCorners(wall.front);
+        correct = checkCorrectPositions().length;
+
     }
 
     if (correct === 1) {
+        console.log('One yellow corner is in the correct position 2.');
         const rtccubelet = correctCubelets[0];
         const wall = CornerTwoWalls(rtccubelet);
         await SwapYellowCorners(wall.front);
+        correct = checkCorrectPositions().length;
     }
 
     try {
@@ -946,6 +954,8 @@ async function SolveYellowCorners() {
     }
 }
 
+
+// 7. ----align yellow corners---- 
 async function AlignYellowCorners() {
     const YellowCornersAlign = document.getElementById('YellowCornersAlign');
     YellowCornersAlign.disabled = true;
@@ -957,7 +967,7 @@ async function AlignYellowCorners() {
             { color1: 0xffff00, color2: 0x0000ff, color3: 0xffa500, targetPos: { x: -1, y: 1, z: 1 } },  // Yellow-Blue-Orange
             { color1: 0xffff00, color2: 0xff0000, color3: 0x0000ff, targetPos: { x: 1, y: 1, z: 1 } }  // Yellow-Red-Blue
         ];
-
+        let count = 0;
         const correctRotation = '+y';
         let Rightwall = null;
         for (let i = 0; i < 4; i++) { 
@@ -973,16 +983,18 @@ async function AlignYellowCorners() {
             }
             while (rotation !== correctRotation) {
                 await RDRD(Rightwall);
-                await sleep(500); 
                 rotation = await checkColorDirection(cubelet, 0xffff00); 
                 console.log('Rotation:', rotation); 
             }
             if(Rightwall !== null)
             {
             await rotateWall('top', true);
-            await sleep(500); 
+            count++;
             }
         }
+        for (let i = 0; i < count; i++) {
+            await rotateWall('top', false);
+        }   
 
         console.log('All yellow corners are correctly oriented.');
 
@@ -1544,6 +1556,17 @@ Random.addEventListener('click', async () => {
     await Randomzie();
 });
 
+
+WhiteCross.addEventListener('click', async () => {
+    await solveWhiteCross();
+    console.log('count:', counter);
+});
+
+WhiteCorners.addEventListener('click', async () => {
+    await solveWhiteCorners();
+    console.log('count:', counter);
+});
+
 SolveMiddle.addEventListener('click', async () => {
     await SolveMiddleLayer();
 });
@@ -1576,22 +1599,13 @@ Solve.addEventListener('click', async () => {
     await SolveYellowCross();
     await AllignYellowWalls();
     await SolveYellowCorners();
-    await AllignYellowCorners();
+    await AlignYellowCorners();
 
 });
 
 
 
 
-WhiteCross.addEventListener('click', async () => {
-    solveWhiteCross();
-    console.log('count:', counter);
-});
-
-WhiteCorners.addEventListener('click', async () => {
-    solveWhiteCorners();
-    console.log('count:', counter);
-});
 
 
 //Button section

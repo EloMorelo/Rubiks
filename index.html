@@ -17,30 +17,46 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/20.0.0/tween.umd.js"></script>
 	</head>
 	<body>
-		<script type="module" src="/rubiks.js"></script>
+		<script type="module" src="script/rubiks.js"></script>
 		<div id="workInProgress">Work in Progress</div>
 		<div class="container">
 			<div id="webgl-container"></div>
 			<div id="controls">
-				<button id="rotateLeftButton">Rotate L</button>
-				<button id="rotateLeftcounter">Rotate L'</button>
-				<button id="rotateRightButton">Rotate R</button>
-				<button id="rotateRightcounter">Rotate R'</button>
-				<button id="rotateBottomButton">Rotate Bottom</button>
-				<button id="rotateBottomButtoncounter">Rotate Bottom'</button>
-				<button id="rotateTopButton">Rotate T</button>
-				<button id="rotateTopButtoncounter">Rotate T'</button>
-				<button id="rotateFrontButton">Rotate F</button>
-				<button id="rotateFrontButtoncounter">Rotate F'</button>
-				<button id="rotateBackButton">Rotate Back</button>
-				<button id="rotateBackButtoncounter">Rotate Back'</button>
-
-				<button id="YellowButton">Yellow</button>
-				<button id="OrangeButton">Orange</button>
-				<button id="GreenButton">Green</button>
-				<button id="BlueButton">Blue</button>
-				<button id="WhiteButton">White</button>
-				<button id="RedButton">Red</button>
+					<div id="row-one">
+						<div class="rotation-label"><b>Clockwise Rotation</b></div>
+						<div id="row-one-buttons">
+							<button id="rotateLeftButton">Rotate L</button>
+							<button id="rotateRightButton">Rotate R</button>
+							<button id="rotateBottomButton">Rotate Bottom</button>
+							<button id="rotateTopButton">Rotate T</button>
+							<button id="rotateFrontButton">Rotate F</button>
+							<button id="rotateBackButton">Rotate Back</button>
+						</div>
+					</div>
+			
+				<div id="row-two">
+					<div class="rotation-label"><b>Counter Clockwise Rotation</b></div>
+					<div id="row-two-buttons">
+					<button id="rotateLeftcounter">Rotate L'</button>
+					<button id="rotateRightcounter">Rotate R'</button>
+					<button id="rotateBottomButtoncounter">Rotate Bottom'</button>
+					<button id="rotateTopButtoncounter">Rotate T'</button>
+					<button id="rotateFrontButtoncounter">Rotate F'</button>
+					<button id="rotateBackButtoncounter">Rotate Back'</button>
+					</div>
+				</div>
+				
+				<div id="Coloring">
+					<div class="rotation-label"><b>Coloring</b></div>
+					<div id="coloring-buttons">
+					<button id="YellowButton">Yellow</button>
+					<button id="OrangeButton">Orange</button>
+					<button id="GreenButton">Green</button>
+					<button id="BlueButton">Blue</button>
+					<button id="WhiteButton">White</button>
+					<button id="RedButton">Red</button>
+					</div>
+				</div>
 
 				<button id="Randomize">Randomize</button>
 				<button id="WhiteCross">Solve White cross</button>
@@ -51,46 +67,7 @@
 				<button id="YellowCorners">Solve Yellow Corners</button>
 				<button id="YellowCornersAlign">Allign Yellow Corners</button>
 				<button id="Solve">Solve The Whole Thing</button>
-
 				<button id="resetButton">Reset</button>
-
-
-				<!-- <div id="gridtop" class="gridtop">
-						<div class="cell" id="cell-0"></div>
-						<div class="cell" id="cell-1"></div>
-						<div class="cell" id="cell-2"></div>
-						<div class="cell" id="cell-3"></div>
-						<div class="cell" id="cell-4"></div>
-						<div class="cell" id="cell-5"></div>
-						<div class="cell" id="cell-6"></div>
-						<div class="cell" id="cell-7"></div>
-						<div class="cell" id="cell-8"></div>
-
-						<div class="cell" id="cell-9"></div>
-						<div class="cell" id="cell-10"></div>
-						<div class="cell" id="cell-11"></div>
-						<div class="cell" id="cell-12"></div>
-						<div class="cell" id="cell-13"></div>
-						<div class="cell" id="cell-14"></div>
-						<div class="cell" id="cell-15"></div>
-						<div class="cell" id="cell-16"></div>
-						<div class="cell" id="cell-17"></div>
-
-						<div class="cell" id="cell-18"></div>
-						<div class="cell" id="cell-19"></div>
-						<div class="cell" id="cell-20"></div>
-						<div class="cell" id="cell-21"></div>
-						<div class="cell" id="cell-22"></div>
-						<div class="cell" id="cell-23"></div>
-						<div class="cell" id="cell-24"></div>
-						<div class="cell" id="cell-25"></div>
-						<div class="cell" id="cell-26"></div>
-
-						<div class="cell" id="cell-27"></div>
-
-
-					</div> 
-				</div> -->
 			</div>
 		</div>
 		<div id="socialLinks">

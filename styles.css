@@ -12,7 +12,7 @@ body, html {
 #webgl-container {
     flex: 1;
     background-color: #000;
-    height: 100%; 
+    height: 100%;
     overflow: hidden; 
 }
 
@@ -22,6 +22,7 @@ body, html {
     padding: 0px;
     overflow-y: auto;
     height: 100%; 
+    width: +4px;
     overflow-y: auto; 
 }
 
@@ -47,20 +48,96 @@ button:active {
     background-color: #ccc;
 }
 
-.gridtop {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); 
-    gap: 1px;
-    padding: 1px;
-    margin-top: 20px; 
+#row-one-buttons {
+    display: flex; 
+    justify-content: space-between; 
 }
 
-.cell {
-    background-color: #e8f626;
-    border: 1px solid #ccc;
-    width: 60px;  
-    height: 60px;
+#row-one-buttons button {
+    flex: 1; 
+    aspect-ratio: 1/1;
+    padding: 0; 
+    margin: 5px; 
+    text-align: center; 
+    font-size: 16px; 
+    border: 1px solid #000; 
+    background-color: #f0f0f0; 
+    cursor: pointer; 
 }
+
+#row-one-buttons button:hover {
+    background-color: #ddd; 
+}
+
+#row-two-buttons{
+    display: flex; 
+    justify-content: space-between; 
+}
+
+
+#row-two-buttons button {
+    flex: 1; 
+    aspect-ratio: 1/1; 
+    padding: 0; 
+    margin: 5px; 
+    text-align: center; 
+    font-size: 16px; 
+    border: 1px solid #000; 
+    background-color: #f0f0f0; 
+    cursor: pointer;
+}
+
+
+
+#row-two-buttons button:hover {
+    background-color: #ddd; 
+}
+
+.rotation-label {
+    margin-bottom: 10px; 
+    text-align: center; 
+}
+
+
+
+
+#coloring-buttons {
+    display: flex; 
+    justify-content: space-between; 
+}
+
+#coloring-buttons button {
+    flex: 1; 
+    aspect-ratio: 1/1;
+    padding: 0; 
+    margin: 5px; 
+    text-align: center; 
+    font-size: 16px; 
+    border: 1px solid #000; 
+    background-color: #f0f0f0; 
+    cursor: pointer; 
+}
+
+#coloring-buttons button:hover {
+    background-color: #ddd; 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #workInProgress {
     position: absolute;

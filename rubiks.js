@@ -91,8 +91,6 @@ async function rotateWall(wall, clockwise) {
 
         await sleep(100);
         counter++;
-        //console.log('count:', counter);
-
 }
 
 const raycaster = new THREE.Raycaster();
@@ -303,7 +301,6 @@ async function solveWhiteCross() {
         const cubelet = findWallPiece(piece.color1, piece.color2);
 
         if (isCubeletAtPosition(cubelet, piece.targetPos.x, piece.targetPos.y, piece.targetPos.z) && checkColorDirection(cubelet, piece.color1) === '-y') {
-            console.log(`Piece with colors ${piece.color1} and ${piece.color2} is already in the correct position.`);
             continue;
         }
 
@@ -391,7 +388,6 @@ async function solveWhiteCorners() {
     for(const piece of cornerPieces){
         const cubelet = findCornerPiece(piece.color1, piece.color2, piece.color3);
         if (isCubeletAtPosition(cubelet, piece.targetPos.x, piece.targetPos.y, piece.targetPos.z) && checkColorDirection(cubelet, piece.color1) === '-y') {
-            console.log(`Piece with colors ${piece.color1}, ${piece.color2}, and ${piece.color3} is already in the correct position.`);
             continue;
         }
 
@@ -494,18 +490,11 @@ async function SolveMiddleLayer() {
         const cubelet = findWallPiece(piece.color1, piece.color2);
 
         if (isCubeletAtPosition(cubelet, piece.targetPos.x, piece.targetPos.y, piece.targetPos.z) && checkPieceIfMiddleMatch(cubelet, piece.color1)) {
-            console.log(`Piece with colors ${piece.color1} and ${piece.color2} is already in the correct position.`);
             continue;
         }
-        console.log(`------------------------------------Piece with colors ${piece.color1} and ${piece.color2} is currently Moving`);
         await MoveMiddleLayerToTop(cubelet,piece.color1);
-        console.log('Middle Layer to top');
         await RotateMiddleLayerToCorrectPosition(cubelet,piece.color1,piece.color2);
-        console.log('Middle Layer to correct position');
         await MoveMiddleLayerDownToCorrectPosition(cubelet,piece.color1,piece.color2);
-        console.log('Middle Layer down to correct position');
-
-
     }
 }
     catch (error) {
@@ -770,8 +759,6 @@ async function rotateTopLayerForHorizontalLine() {
 
 
 async function CheckYellowCrossAlignment() {
-    console.log('Yellow Edges:');
-
     const Pieces = [
         { color1: 0xffff00, color2: 0xff0000, targetPos: { x: 1, y: 1, z: 0 } }, // Yellow-Red
         { color1: 0xffff00, color2: 0x0000ff, targetPos: { x: 0, y: 1, z: 1 } }, // Yellow-Blue
@@ -806,10 +793,6 @@ async function CheckYellowCrossAlignment() {
 
         await rotateWall('top', true);
     }
-
-    console.log('Highest:', highest, 'Max Rotation:', maxRotation);
-    console.log('Correct cubelets:', correctCubelets);
-
     for (let i = 0; i < (4 - maxRotation); i++) {
         await rotateWall('top', false);
     }
@@ -906,7 +889,6 @@ async function SolveYellowCorners() {
         return edgePieces.filter(edge => {
             const cubelet = findCornerPiece(edge.color1, edge.color2, edge.color3);
             if (isCubeletAtPosition(cubelet, edge.targetPos.x, edge.targetPos.y, edge.targetPos.z)) {
-                console.log(`Piece with colors ${edge.color1}, ${edge.color2}, and ${edge.color3} is already in the correct position.`);
                 correctCubelets.push(cubelet);
                 return true;
             }
@@ -915,19 +897,16 @@ async function SolveYellowCorners() {
     }
     let correct = checkCorrectPositions().length;
     if (correct === 0) {
-        console.log('No yellow corners are in the correct position 1.');
         await SwapYellowCorners('front');
         correct = checkCorrectPositions().length;
     }
 
     if (correct === 0) {
-        console.log('No yellow corners are in the correct position 2.');
         await SwapYellowCorners('front');
         correct = checkCorrectPositions().length;
     }
 
     if (correct === 1) {
-        console.log('One yellow corner is in the correct position 1.');
         const rtccubelet = correctCubelets[0];
         const wall = CornerTwoWalls(rtccubelet);
         await SwapYellowCorners(wall.front);
@@ -936,7 +915,6 @@ async function SolveYellowCorners() {
     }
 
     if (correct === 1) {
-        console.log('One yellow corner is in the correct position 2.');
         const rtccubelet = correctCubelets[0];
         const wall = CornerTwoWalls(rtccubelet);
         await SwapYellowCorners(wall.front);
@@ -984,7 +962,6 @@ async function AlignYellowCorners() {
             while (rotation !== correctRotation) {
                 await RDRD(Rightwall);
                 rotation = await checkColorDirection(cubelet, 0xffff00); 
-                console.log('Rotation:', rotation); 
             }
             if(Rightwall !== null)
             {

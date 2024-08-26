@@ -126,6 +126,26 @@ button:active {
 
 
 
+#Aligment-buttons {
+    display: flex; 
+    justify-content: space-between; 
+}
+
+#Aligment-buttons button {
+    flex: 1; 
+    aspect-ratio: 1/1;
+    padding: 0; 
+    margin: 5px; 
+    text-align: center; 
+    font-size: 16px; 
+    border: 1px solid #000; 
+    cursor: pointer; 
+}
+
+#Aligment-buttons button:hover {
+    background-color: #ddd; 
+}
+
 
 
 

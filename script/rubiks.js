@@ -165,10 +165,10 @@ function sleep(ms) {
 }
 
 
-// 1. ----solve white cross----
+// 1. ----solve white cross---- fix 1 bottom' -> randomize 
 async function solveWhiteCross() {
-    const WhiteCross = document.getElementById('WhiteCross');
-    WhiteCross.disabled = true;
+    const SolveWhiteCross = document.getElementById('SolveWhiteCross');
+    SolveWhiteCross.disabled = true;
 
 
     try {
@@ -196,7 +196,7 @@ async function solveWhiteCross() {
     console.error('An error occurred while solving the white cross:', error);
 } finally {
     
-    WhiteCross.disabled = false;
+    SolveWhiteCross.disabled = false;
 }
 }
 
@@ -257,8 +257,8 @@ async function movePieceDownToCorrectPosition(cubelet) {
 
 // 2. ----solve white corners----
 async function solveWhiteCorners() {
-    const WhiteCorners = document.getElementById('WhiteCorners');
-    WhiteCorners.disabled = true;
+    const SolveWhiteCorners = document.getElementById('SolveWhiteCorners');
+    SolveWhiteCorners.disabled = true;
     
     try {
     const cornerPieces = [
@@ -283,7 +283,7 @@ async function solveWhiteCorners() {
     console.error('An error occurred while solving the white cross:', error);
 } finally {
     
-    WhiteCorners.disabled = false;
+    SolveWhiteCorners.disabled = false;
 }
 }
 
@@ -355,9 +355,9 @@ async function moveCornerPieceDownToCorrectPosition(cubelet) {
 
 
 // 3. ----solve middle layer----
-async function SolveMiddleLayer() {
-    const SolveMiddle = document.getElementById('SolveMiddle');
-    SolveMiddle.disabled = true;
+async function solveMiddleLayer() {
+    const SolveMiddleLayer = document.getElementById('SolveMiddleLayer');
+    SolveMiddleLayer.disabled = true;
 
     try {
 
@@ -383,7 +383,7 @@ async function SolveMiddleLayer() {
         console.error('An error occurred while solving the middle layer:', error);
     }
     finally {
-        SolveMiddle.disabled = false;
+        SolveMiddleLayer.disabled = false;
     }
 
 }
@@ -454,9 +454,9 @@ async function MoveMiddleLayerDownToCorrectPosition(cubelet,color1,color2) {
 
 
 // 4. ----solve yellow cross----
-async function SolveYellowCross() {
-    const YellowCross = document.getElementById('YellowCross');
-    YellowCross.disabled = true;
+async function solveYellowCrossPosition() {
+    const SolveYellowCrossPosition = document.getElementById('SolveYellowCrossPosition');
+    SolveYellowCrossPosition.disabled = true;
 
     try {
     if (detectYellowDot()) {
@@ -484,7 +484,7 @@ async function SolveYellowCross() {
         console.error('An error occurred while solving the yellow cross:', error);
     }
     finally {
-        YellowCross.disabled = false;
+        SolveYellowCrossPosition.disabled = false;
     }
     
 }
@@ -677,9 +677,9 @@ async function CheckYellowCrossAlignment() {
 }
 
 // 5. ----align yellow corners----
-async function AllignYellowWalls() {
-    const YellowCrossAlign = document.getElementById('YellowCornersAlign');
-    YellowCrossAlign.disabled = true;
+async function solveYellowCrossAlignment() {
+    const SolveYellowCrossAlignment = document.getElementById('SolveYellowCrossAlignment');
+    SolveYellowCrossAlignment.disabled = true;
 
     try {
 
@@ -733,7 +733,7 @@ async function AllignYellowWalls() {
         console.error('An error occurred while solving the yellow cross:', error);
     }
     finally {
-        YellowCrossAlign.disabled = false;
+        SolveYellowCrossAlignment.disabled = false;
     }
 }
 
@@ -750,9 +750,9 @@ async function YellowMiddleAlgorithm(wall) {
 }
 
 //6. ----solve yellow corners----this needs fixing
-async function SolveYellowCorners() {
-    const YellowCorners = document.getElementById('YellowCorners');
-    YellowCorners.disabled = true;
+async function solveYelowCornersPosition() {
+    const SolveYelowCornersPosition = document.getElementById('SolveYelowCornersPosition');
+    SolveYelowCornersPosition.disabled = true;
 
     const edgePieces = [
         { color1: 0xFFFF00, color2: 0xff0000, color3: 0x009b48, targetPos: { x: 1, y: 1, z: -1 } }, // Yellow-Red-Green
@@ -804,15 +804,15 @@ async function SolveYellowCorners() {
         console.error('An error occurred while solving the yellow corners:', error);
     }
     finally {
-        YellowCorners.disabled = false;
+        SolveYelowCornersPosition.disabled = false;
     }
 }
 
 
 // 7. ----align yellow corners---- 
-async function AlignYellowCorners() {
-    const YellowCornersAlign = document.getElementById('YellowCornersAlign');
-    YellowCornersAlign.disabled = true;
+async function solveYellowCornersRotation() {
+    const SolveYellowCornersRotation = document.getElementById('SolveYellowCornersRotation');
+    SolveYellowCornersRotation.disabled = true;
 
     try {
         const cornerPieces = [
@@ -854,7 +854,7 @@ async function AlignYellowCorners() {
     } catch (error) {
         console.error('An error occurred while aligning the yellow edges:', error);
     } finally {
-        YellowCornersAlign.disabled = false;
+        SolveYellowCornersRotation.disabled = false;
     }
 }
 
@@ -920,36 +920,36 @@ Random.addEventListener('click', async () => {
 });
 
 
-WhiteCross.addEventListener('click', async () => {
+SolveWhiteCross.addEventListener('click', async () => {
     await solveWhiteCross();
     console.log('count:', counter);
 });
 
-WhiteCorners.addEventListener('click', async () => {
+SolveWhiteCorners.addEventListener('click', async () => {
     await solveWhiteCorners();
     console.log('count:', counter);
 });
 
-SolveMiddle.addEventListener('click', async () => {
-    await SolveMiddleLayer();
+SolveMiddleLayer.addEventListener('click', async () => {
+    await solveMiddleLayer();
 });
 
 
-YellowCross.addEventListener('click', async () => {
-    await SolveYellowCross();
+SolveYellowCrossPosition.addEventListener('click', async () => {
+    await solveYellowCross();
 
 });
 
-YellowCrossAlign.addEventListener('click', async () => {
-    await AllignYellowWalls();
+SolveYellowCrossAlignment.addEventListener('click', async () => {
+    await solveYellowCrossAlignment();
 });
 
-YellowCorners.addEventListener('click', async () => {
-    await SolveYellowCorners()
+SolveYelowCornersPosition.addEventListener('click', async () => {
+    await solveYellowCorners()
 });
 
-YellowCornersAlign.addEventListener('click', async () => {
-    await AlignYellowCorners();
+SolveYellowCornersRotation.addEventListener('click', async () => {
+    await solveYellowCrossAlignment();
 });
 
 
@@ -958,11 +958,10 @@ const Solve = document.getElementById('Solve');
 Solve.addEventListener('click', async () => {
     await solveWhiteCross();
     await solveWhiteCorners();
-    await SolveMiddleLayer();
-    await SolveYellowCross();
-    await AllignYellowWalls();
-    await SolveYellowCorners();
-    await AlignYellowCorners();
+    await solveMiddleLayer();
+    await solveYellowCrossPosition();
+    await solveYellowCrossAlignment();
+    await solveYellowCornersRotation();
 
 });
 

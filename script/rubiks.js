@@ -812,7 +812,7 @@ async function solveYelowCornersPosition() {
 // 7. ----align yellow corners---- 
 async function solveYellowCornersRotation() {
     const SolveYellowCornersRotation = document.getElementById('SolveYellowCornersRotation');
-    SolveYellowCornersRotation.disabled = true;
+    SolveYellowCornersRotation.disabled = true; 
 
     try {
         const cornerPieces = [
@@ -833,11 +833,13 @@ async function solveYellowCornersRotation() {
                 {
                     const walls = CornerTwoWalls(cubelet);
                     Rightwall = walls.right;
+                    console.log('Rightwall is set to:', Rightwall);
+
                 }
             }
             while (rotation !== correctRotation) {
                 await RDRD(Rightwall);
-                rotation = await checkColorDirection(cubelet, 0xffff00); 
+                rotation = checkColorDirection(cubelet, 0xffff00); 
             }
             if(Rightwall !== null)
             {
@@ -845,7 +847,8 @@ async function solveYellowCornersRotation() {
             count++;
             }
         }
-        for (let i = 0; i < count; i++) {
+        for (let i = 0; i < count; i++) 
+            {
             await rotateWall('top', false);
         }   
 
@@ -936,7 +939,7 @@ SolveMiddleLayer.addEventListener('click', async () => {
 
 
 SolveYellowCrossPosition.addEventListener('click', async () => {
-    await solveYellowCross();
+    await solveYellowCrossPosition();
 
 });
 
@@ -945,11 +948,11 @@ SolveYellowCrossAlignment.addEventListener('click', async () => {
 });
 
 SolveYelowCornersPosition.addEventListener('click', async () => {
-    await solveYellowCorners()
+    await solveYelowCornersPosition();
 });
 
 SolveYellowCornersRotation.addEventListener('click', async () => {
-    await solveYellowCrossAlignment();
+    await solveYellowCornersRotation();
 });
 
 
@@ -961,6 +964,7 @@ Solve.addEventListener('click', async () => {
     await solveMiddleLayer();
     await solveYellowCrossPosition();
     await solveYellowCrossAlignment();
+    await solveYelowCornersPosition();
     await solveYellowCornersRotation();
 
 });

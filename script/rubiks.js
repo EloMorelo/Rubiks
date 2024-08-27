@@ -226,14 +226,13 @@ async function movePieceToTopLayer(cubelet) {
     }
     if (cubelet.position.y === 1 && checkColorDirection(cubelet, 0xffffff) !== '+y')
     {
-        let whiteWall = getCubeletWallWhiteFace(cubelet);
+        const whiteWall = getCubeletWallWhiteFace(cubelet);
         await rotateWall(whiteWall, false);
         const colorWall = getCubeletWallColorFace(cubelet);
         await rotateWall(colorWall, false);
-        whiteWall = getCubeletWallWhiteFace(cubelet);
-        const saveWall = getCubeletWallColorFace(cubelet);
-        await rotateWall(whiteWall, false);
-        await rotateWall(saveWall, true);
+        await rotateWall('top', true);
+        await rotateWall(colorWall, true);
+        await rotateWall(whiteWall, true);
     }
     else
     {

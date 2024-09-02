@@ -100,7 +100,17 @@ const faceNames = ['right', 'left', 'top', 'bottom', 'front', 'back'];
 const pointer = new THREE.Vector2();
 document.addEventListener('mousedown', onMouseDown);
 
-let faceColor = 0xffffff;
+
+let faceColor = null;
+
+export function getFaceColor() {
+    return faceColor;
+}
+
+export function setFaceColor(newColor) {
+    faceColor = newColor;
+}
+
 
 
 function onMouseDown(event) {
@@ -649,7 +659,6 @@ async function CheckYellowCrossAlignment() {
     for (let i = 0; i < 4; i++) { 
         correct = 0;
         let currentCorrectCubelets = {}; 
-
         for (let j = 0; j < Pieces.length; j++) {
             const piece = Pieces[j];
             const cubelet = findWallPiece(piece.color1, piece.color2);
@@ -658,6 +667,12 @@ async function CheckYellowCrossAlignment() {
                 correct++;
                 currentCorrectCubelets[`cubelet${correct}`] = cubelet;  
             }
+        }
+        
+        if(correct===4)
+        {
+            console.log('All yellow edges are already aligned.');
+            return;
         }
 
         if (correct > highest) {
@@ -877,12 +892,6 @@ async function SwapYellowCorners(front) {
     await rotateWall('top', false);
     await rotateWall(adjwall.leftWall, true);
 }
-
-
-const Resetbutton = document.getElementById('resetButton');
-Resetbutton.addEventListener('click', async () => {
-    await applyYellowCrossAlgorithm();
-});
 
 async function Randomzie()
 {

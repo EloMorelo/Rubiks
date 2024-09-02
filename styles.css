@@ -26,33 +26,22 @@ body, html {
     overflow-y: auto; 
 }
 
-button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #e7e7e7;
-    color: #333;
-    text-align: center;
+#go-back-button {
+    position: relative;
+    display: none;
 }
 
-button:hover {
-    background-color: #ddd;
-}
 
-button:active {
-    background-color: #ccc;
-}
 
+
+
+#manual-rotation {
+    display: none;
+}
 #row-one-buttons {
     display: flex; 
     justify-content: space-between; 
 }
-
 #row-one-buttons button {
     flex: 1; 
     aspect-ratio: 1/1;
@@ -68,13 +57,10 @@ button:active {
 #row-one-buttons button:hover {
     background-color: #ddd; 
 }
-
 #row-two-buttons{
     display: flex; 
     justify-content: space-between; 
 }
-
-
 #row-two-buttons button {
     flex: 1; 
     aspect-ratio: 1/1; 
@@ -86,26 +72,22 @@ button:active {
     background-color: #f0f0f0; 
     cursor: pointer;
 }
-
-
-
 #row-two-buttons button:hover {
     background-color: #ddd; 
 }
 
-.rotation-label {
-    margin-bottom: 10px; 
-    text-align: center; 
+
+
+
+
+
+#coloring {
+    display: none;
 }
-
-
-
-
 #coloring-buttons {
     display: flex; 
     justify-content: space-between; 
 }
-
 #coloring-buttons button {
     flex: 1; 
     aspect-ratio: 1/1;
@@ -117,7 +99,6 @@ button:active {
     background-color: #f0f0f0; 
     cursor: pointer; 
 }
-
 #coloring-buttons button:hover {
     background-color: #ddd; 
 }
@@ -125,37 +106,33 @@ button:active {
 
 
 
-
-#Aligment-buttons {
+#aligment { 
+    display: none; 
+    justify-content: space-between; 
+}
+#aligment button {
+    aspect-ratio: 1/1;
+    width: 100px;
+    height: 100px;
+}
+#main-aligment {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    text-align: center;
+}
+#indiv-solve{
     display: flex; 
     justify-content: space-between; 
 }
 
-#Aligment-buttons button {
-    flex: 1; 
-    aspect-ratio: 1/1;
-    padding: 0; 
-    margin: 5px; 
+
+
+
+.rotation-label {
+    margin-bottom: 10px; 
     text-align: center; 
-    font-size: 16px; 
-    border: 1px solid #000; 
-    cursor: pointer; 
 }
-
-#Aligment-buttons button:hover {
-    background-color: #ddd; 
-}
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -186,186 +163,4 @@ button:active {
     display: inline-block;
 }
 
-#WhiteCross {
-    background-color: #4CAF50; 
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-}
-
-
-#WhiteCross:disabled {
-    background-color: #cccccc; 
-    color: #666666; 
-    cursor: not-allowed;
-    opacity: 0.6; 
-}
-
-#Randomize{
-    background-color: #4CAF50; 
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-}
-
-#Randomize:disabled {
-    background-color: #cccccc; 
-    color: #666666; 
-    cursor: not-allowed;
-    opacity: 0.6; 
-}
-
-#WhiteCorners {
-    background-color: #4CAF50; 
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-}
-
-#WhiteCorners:disabled {
-    background-color: #cccccc; 
-    color: #666666; 
-    cursor: not-allowed;
-    opacity: 0.6; 
-}
-
-#SolveMiddle {
-    background-color: #4CAF50; 
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-}
-
-#SolveMiddle:disabled {
-    background-color: #cccccc; 
-    color: #666666; 
-    cursor: not-allowed;
-    opacity: 0.6; 
-}
-
-#YellowCross {
-    background-color: #4CAF50; 
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-}
-
-#YellowCross:disabled {
-    background-color: #cccccc; 
-    color: #666666; 
-    cursor: not-allowed;
-    opacity: 0.6; 
-}
-
-
-#YellowCrossAlign {
-    background-color: #4CAF50; 
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-}
-
-#YellowCrossAlign:disabled {
-    background-color: #cccccc; 
-    color: #666666; 
-    cursor: not-allowed;
-    opacity: 0.6; 
-}
-
-
-#YellowCorners {
-    background-color: #4CAF50; 
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-}
-
-#YellowCorners:disabled {
-    background-color: #cccccc; 
-    color: #666666; 
-    cursor: not-allowed;
-    opacity: 0.6; 
-}
-
-#YellowCornersAlign {
-    background-color: #4CAF50; 
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-}
-
-#YellowCornersAlign:disabled {
-    background-color: #cccccc; 
-    color: #666666; 
-    cursor: not-allowed;
-    opacity: 0.6; 
-}
-
-#Solve {
-    background-color: #4CAF50; 
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-}
-
-#Solve:disabled {
-    background-color: #cccccc; 
-    color: #666666; 
-    cursor: not-allowed;
-    opacity: 0.6; 
-}
 

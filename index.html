@@ -18,57 +18,69 @@
 	</head>
 	<body>
 		<script type="module" src="script/rubiks.js"></script>
+		<script type="module" src="script/menu.js"></script>
 		<div id="workInProgress">Work in Progress</div>
 		<div class="container">
 			<div id="webgl-container"></div>
 			<div id="controls">
+				<div id="menu">
+					<button id="page1Button">Button 1</button>
+					<button id="page2Button">Button 2</button>
+					<button id="page3Button">Button 3</button>
+				</div>
+				<button id="go-back-button">Go Back</button>
+				<div id="manual-rotation">
 					<div id="row-one">
 						<div class="rotation-label"><b>Clockwise Rotation</b></div>
-						<div id="row-one-buttons">
-							<button id="rotateLeftButton">Rotate L</button>
-							<button id="rotateRightButton">Rotate R</button>
-							<button id="rotateBottomButton">Rotate Bottom</button>
-							<button id="rotateTopButton">Rotate T</button>
-							<button id="rotateFrontButton">Rotate F</button>
-							<button id="rotateBackButton">Rotate Back</button>
-						</div>
+							<div id="row-one-buttons">
+								<button id="rotateLeftButton">Rotate L</button>
+								<button id="rotateRightButton">Rotate R</button>
+								<button id="rotateBottomButton">Rotate Bottom</button>
+								<button id="rotateTopButton">Rotate T</button>
+								<button id="rotateFrontButton">Rotate F</button>
+								<button id="rotateBackButton">Rotate Back</button>
+							</div>
 					</div>
-			
-				<div id="row-two">
-					<div class="rotation-label"><b>Counter Clockwise Rotation</b></div>
-					<div id="row-two-buttons">
-					<button id="rotateLeftcounter">Rotate L'</button>
-					<button id="rotateRightcounter">Rotate R'</button>
-					<button id="rotateBottomButtoncounter">Rotate Bottom'</button>
-					<button id="rotateTopButtoncounter">Rotate T'</button>
-					<button id="rotateFrontButtoncounter">Rotate F'</button>
-					<button id="rotateBackButtoncounter">Rotate Back'</button>
+					<div id="row-two">
+						<div class="rotation-label"><b>Counter Clockwise Rotation</b></div>
+							<div id="row-two-buttons">
+								<button id="rotateLeftcounter">Rotate L'</button>
+								<button id="rotateRightcounter">Rotate R'</button>
+								<button id="rotateBottomButtoncounter">Rotate Bottom'</button>
+								<button id="rotateTopButtoncounter">Rotate T'</button>
+								<button id="rotateFrontButtoncounter">Rotate F'</button>
+								<button id="rotateBackButtoncounter">Rotate Back'</button>
+							</div>
 					</div>
 				</div>
-				
-				<div id="Coloring">
+				<div id="coloring">
 					<div class="rotation-label"><b>Coloring</b></div>
 					<div id="coloring-buttons">
-					<button id="YellowButton">Yellow</button>
-					<button id="OrangeButton">Orange</button>
-					<button id="GreenButton">Green</button>
-					<button id="BlueButton">Blue</button>
-					<button id="WhiteButton">White</button>
-					<button id="RedButton">Red</button>
+						<button id="YellowButton">Yellow</button>
+						<button id="OrangeButton">Orange</button>
+						<button id="GreenButton">Green</button>
+						<button id="BlueButton">Blue</button>
+						<button id="WhiteButton">White</button>
+						<button id="RedButton">Red</button>
 					</div>
 				</div>
-				
-				<div id="Aligment-buttons">
-					<button id="Randomize">Randomize</button>
-					<button id="SolveWhiteCross">Solve White cross</button>
-					<button id="SolveWhiteCorners">Solve White corners</button>
-					<button id="SolveMiddleLayer">Solve Middle Layer</button>
-					<button id="SolveYellowCrossPosition">Solve The YellowCross</button>
-					<button id="SolveYellowCrossAlignment">Allign YellowCross</button>
-					<button id="SolveYelowCornersPosition">Solve Yellow Corners</button>
-					<button id="SolveYellowCornersRotation">Allign Yellow Corners</button>
-					<button id="Solve">Solve The Whole Thing</button>
-					<button id="resetButton">Reset</button>
+				<div id="aligment">
+					<div class="rotation-label"><b>Solving</b></div>
+					<div id="aligment-buttons">
+						<div id="main-aligment">
+							<button id="Randomize">Randomize</button>
+							<button id="Solve">Solve The Whole Thing</button>
+						</div>
+						<div id="indiv-solve">
+							<button id="SolveWhiteCross">Solve White cross</button>
+							<button id="SolveWhiteCorners">Solve White corners</button>
+							<button id="SolveMiddleLayer">Solve Middle Layer</button>
+							<button id="SolveYellowCrossPosition">Solve The YellowCross</button>
+							<button id="SolveYellowCrossAlignment">Allign YellowCross</button>
+							<button id="SolveYelowCornersPosition">Solve Yellow Corners</button>
+							<button id="SolveYellowCornersRotation">Allign Yellow Corners</button>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

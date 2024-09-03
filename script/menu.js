@@ -8,7 +8,7 @@ var aligment = document.getElementById('aligment');
 var coloring = document.getElementById('coloring');
 var menu = document.getElementById('menu');
 var goback = document.getElementById('go-back-button');
-
+var rotationSpeed = document.getElementById('rotation-speed-div');
 
 
 page1Button.addEventListener('click', () => {
@@ -16,6 +16,7 @@ page1Button.addEventListener('click', () => {
     manualRotation.style.display = 'block';
     goback.style.display = 'block';
     menu.style.display = 'none';
+    rotationSpeed.style.display = 'block';
 });
 
 page2Button.addEventListener('click', () => {
@@ -23,6 +24,7 @@ page2Button.addEventListener('click', () => {
     coloring.style.display = 'block';
     goback.style.display = 'block';
     menu.style.display = 'none';
+    rotationSpeed.style.display = 'block';
 });
 
 page3Button.addEventListener('click', () => {
@@ -30,6 +32,7 @@ page3Button.addEventListener('click', () => {
     aligment.style.display = 'block';
     goback.style.display = 'block';
     menu.style.display = 'none';
+    rotationSpeed.style.display = 'block';
 });
 
 goback.addEventListener('click', () => {
@@ -39,5 +42,6 @@ goback.addEventListener('click', () => {
     aligment.style.display = 'none';
     goback.style.display = 'none';
     menu.style.display = 'block';
+    rotationSpeed.style.display = 'none';
     setFaceColor(null);
 });

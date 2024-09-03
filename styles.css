@@ -30,6 +30,9 @@ body, html {
     position: relative;
     display: none;
 }
+#rotation-speed-div {
+    display: none;
+}
 
 .menu-label {
     text-align: center;
@@ -167,8 +170,10 @@ body, html {
     background-color: #f0f0f0;
     cursor: pointer;
 }
-
-
+#steps {
+    justify-content: center;
+    text-align: center;
+}
 
 
 .rotation-label {

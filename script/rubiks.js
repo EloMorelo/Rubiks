@@ -11,55 +11,63 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth / 2 , window.innerHeight);
 document.body.appendChild(renderer.domElement);
 const originalColors = new Map();
-
-
 scene.background = new THREE.Color(0x808080);
-
 const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLight);
-
 export const cubelets = pushCubelets();
 cubelets.forEach(cubelet => scene.add(cubelet));
-
 const webglContainer = document.getElementById('webgl-container');
+
+
+let rot_speed = 64;
+
 
 function setRendererSize() {
     renderer.setSize(webglContainer.clientWidth, webglContainer.clientHeight);
     camera.aspect = webglContainer.clientWidth / webglContainer.clientHeight;
     camera.updateProjectionMatrix();
 }
-
 setRendererSize();
 webglContainer.appendChild(renderer.domElement);
 
 let counter = 0;
+let movesHistory = [];
+
+
 async function rotateWall(wall, clockwise) {
     let cubeletsInWall;
     let axis, angle;
+    let move;
     switch(wall) {
         case 'left':
             cubeletsInWall = cubelets.filter(cubelet => cubelet.position.x === -1);
             axis = new THREE.Vector3(1, 0, 0); 
+            move = clockwise ? "L" : "L'";
             break;
         case 'right':
             cubeletsInWall = cubelets.filter(cubelet => cubelet.position.x === 1);
             axis = new THREE.Vector3(-1, 0, 0);
+            move = clockwise ? "R" : "R'";
             break;
         case 'top':
             cubeletsInWall = cubelets.filter(cubelet => cubelet.position.y === 1);
             axis = new THREE.Vector3(0, -1, 0);
+            move = clockwise ? "U" : "U'";
             break;
         case 'bottom':
             cubeletsInWall = cubelets.filter(cubelet => cubelet.position.y === -1);
             axis = new THREE.Vector3(0, 1, 0); 
+            move = clockwise ? "D" : "D'";
             break;
         case 'front':
             cubeletsInWall = cubelets.filter(cubelet => cubelet.position.z === 1);
             axis = new THREE.Vector3(0, 0, -1); 
+            move = clockwise ? "F" : "F'";
             break;
         case 'back':
             cubeletsInWall = cubelets.filter(cubelet => cubelet.position.z === -1);
             axis = new THREE.Vector3(0, 0, 1); 
+            move = clockwise ? "B" : "B'";
             break;
         default:
             console.error('Invalid wall specified');
@@ -75,7 +83,7 @@ async function rotateWall(wall, clockwise) {
     });
 
     let tween = new TWEEN.Tween({ kat: 0 })
-        .to({ kat: angle }, 64)
+        .to({ kat: angle }, rot_speed)
         .onUpdate(({ kat }) => {
             tempGroup.setRotationFromAxisAngle(axis, kat);
         })
@@ -88,14 +96,27 @@ async function rotateWall(wall, clockwise) {
                 cubelet.updateMatrixWorld();
             });
             scene.remove(tempGroup);
+            movesHistory.push(move);
+            updateStepsDisplay();
         })
         .start();
 
-        await sleep(100);
+        await sleep(rot_speed+10);
         counter++;
 }
 
+function getLastMove() {
+    return movesHistory[movesHistory.length - 1];
+}
+function updateStepsDisplay() {
+    const stepsDiv = document.querySelector('#steps .step');
+    stepsDiv.innerHTML = movesHistory.join(' '); // Display all moves separated by spaces
+}
+
+
+
 const raycaster = new THREE.Raycaster();
+const buttons = document.querySelectorAll('#SolveWhiteCross, #SolveWhiteCorners, #SolveMiddleLayer, #SolveYellowCrossPosition, #SolveYellowCrossAlignment, #SolveYelowCornersPosition, #SolveYellowCornersRotation, #Solve, #Randomize');
 const faceNames = ['right', 'left', 'top', 'bottom', 'front', 'back'];
 const pointer = new THREE.Vector2();
 document.addEventListener('mousedown', onMouseDown);
@@ -177,9 +198,7 @@ function sleep(ms) {
 
 // 1. ----solve white cross---- fix 1 bottom' -> randomize 
 async function solveWhiteCross() {
-    const SolveWhiteCross = document.getElementById('SolveWhiteCross');
-    SolveWhiteCross.disabled = true;
-
+    buttons.forEach(button => button.disabled = true);
 
     try {
     const edgePieces = [
@@ -206,7 +225,7 @@ async function solveWhiteCross() {
     console.error('An error occurred while solving the white cross:', error);
 } finally {
     
-    SolveWhiteCross.disabled = false;
+    buttons.forEach(button => button.disabled = false);
 }
 }
 
@@ -266,9 +285,7 @@ async function movePieceDownToCorrectPosition(cubelet) {
 
 // 2. ----solve white corners----
 async function solveWhiteCorners() {
-    const SolveWhiteCorners = document.getElementById('SolveWhiteCorners');
-    SolveWhiteCorners.disabled = true;
-    
+    buttons.forEach(button => button.disabled = true);
     try {
     const cornerPieces = [
         { color1: 0xffffff, color2: 0xff0000, color3: 0x0000ff, targetPos: { x: 1, y: -1, z: 1 } }, // White-Red-Blue
@@ -291,8 +308,7 @@ async function solveWhiteCorners() {
  catch (error) {
     console.error('An error occurred while solving the white cross:', error);
 } finally {
-    
-    SolveWhiteCorners.disabled = false;
+    buttons.forEach(button => button.disabled = false);
 }
 }
 
@@ -365,9 +381,7 @@ async function moveCornerPieceDownToCorrectPosition(cubelet) {
 
 // 3. ----solve middle layer----
 async function solveMiddleLayer() {
-    const SolveMiddleLayer = document.getElementById('SolveMiddleLayer');
-    SolveMiddleLayer.disabled = true;
-
+    buttons.forEach(button => button.disabled = true);
     try {
 
     const edgePieces = [
@@ -392,7 +406,7 @@ async function solveMiddleLayer() {
         console.error('An error occurred while solving the middle layer:', error);
     }
     finally {
-        SolveMiddleLayer.disabled = false;
+        buttons.forEach(button => button.disabled = false);
     }
 
 }
@@ -464,8 +478,8 @@ async function MoveMiddleLayerDownToCorrectPosition(cubelet,color1,color2) {
 
 // 4. ----solve yellow cross----
 async function solveYellowCrossPosition() {
-    const SolveYellowCrossPosition = document.getElementById('SolveYellowCrossPosition');
-    SolveYellowCrossPosition.disabled = true;
+
+    buttons.forEach(button => button.disabled = true);
 
     try {
     if (detectYellowDot()) {
@@ -493,7 +507,7 @@ async function solveYellowCrossPosition() {
         console.error('An error occurred while solving the yellow cross:', error);
     }
     finally {
-        SolveYellowCrossPosition.disabled = false;
+        buttons.forEach(button => button.disabled = false);
     }
     
 }
@@ -672,7 +686,7 @@ async function CheckYellowCrossAlignment() {
         if(correct===4)
         {
             console.log('All yellow edges are already aligned.');
-            return;
+            return currentCorrectCubelets;
         }
 
         if (correct > highest) {
@@ -692,14 +706,18 @@ async function CheckYellowCrossAlignment() {
 
 // 5. ----align yellow corners----
 async function solveYellowCrossAlignment() {
-    const SolveYellowCrossAlignment = document.getElementById('SolveYellowCrossAlignment');
-    SolveYellowCrossAlignment.disabled = true;
+    buttons.forEach(button => button.disabled = true);
 
     try {
 
     const Pieces = await CheckYellowCrossAlignment();
+    console.log(Pieces);
     const pieceCount = Object.keys(Pieces).length;
-    if(pieceCount  === 2)
+    if(pieceCount  === 4)
+    {
+            console.log('All corners are already aligned.');
+    }
+    else if(pieceCount  === 2)
     {
         const colordirection1 = getCubeletWallMiddleFace(Pieces.cubelet1, 0xffff00);
         const colordirection2 = getCubeletWallMiddleFace(Pieces.cubelet2, 0xffff00);
@@ -737,17 +755,14 @@ async function solveYellowCrossAlignment() {
             }
         }
 
-    if(pieceCount  === 4)
-    {
-        console.log('All corners are already aligned.');
-    }
+
 }
     }
     catch (error) {
         console.error('An error occurred while solving the yellow cross:', error);
     }
     finally {
-        SolveYellowCrossAlignment.disabled = false;
+        buttons.forEach(button => button.disabled = false);
     }
 }
 
@@ -765,8 +780,7 @@ async function YellowMiddleAlgorithm(wall) {
 
 //6. ----solve yellow corners----this needs fixing
 async function solveYelowCornersPosition() {
-    const SolveYelowCornersPosition = document.getElementById('SolveYelowCornersPosition');
-    SolveYelowCornersPosition.disabled = true;
+    buttons.forEach(button => button.disabled = true);
 
     const edgePieces = [
         { color1: 0xFFFF00, color2: 0xff0000, color3: 0x009b48, targetPos: { x: 1, y: 1, z: -1 } }, // Yellow-Red-Green
@@ -818,15 +832,14 @@ async function solveYelowCornersPosition() {
         console.error('An error occurred while solving the yellow corners:', error);
     }
     finally {
-        SolveYelowCornersPosition.disabled = false;
+        buttons.forEach(button => button.disabled = false);
     }
 }
 
 
 // 7. ----align yellow corners---- 
 async function solveYellowCornersRotation() {
-    const SolveYellowCornersRotation = document.getElementById('SolveYellowCornersRotation');
-    SolveYellowCornersRotation.disabled = true; 
+    buttons.forEach(button => button.disabled = true);
 
     try {
         const cornerPieces = [
@@ -861,17 +874,20 @@ async function solveYellowCornersRotation() {
             count++;
             }
         }
-        for (let i = 0; i < count; i++) 
-            {
-            await rotateWall('top', false);
-        }   
 
+        if (count !== 4)
+        {
+            for (let i = 0; i < count; i++) 
+                {
+                await rotateWall('top', false);
+            }   
+        }
         console.log('All yellow corners are correctly oriented.');
 
     } catch (error) {
         console.error('An error occurred while aligning the yellow edges:', error);
     } finally {
-        SolveYellowCornersRotation.disabled = false;
+        buttons.forEach(button => button.disabled = false);
     }
 }
 
@@ -895,8 +911,7 @@ async function SwapYellowCorners(front) {
 
 async function Randomzie()
 {
-    const Randomize = document.getElementById('Randomize');
-    Randomize.disabled = true;
+    buttons.forEach(button => button.disabled = true);
 
     try{
     await rotateWall('right', true);
@@ -920,45 +935,68 @@ async function Randomzie()
     catch (error) {
         console.error('An error occurred while randomizing the cube:', error);
     } finally {
-        Randomize.disabled = false;
+        buttons.forEach(button => button.disabled = false);
     }
 }
 
+async function SolveTheCube()
+{
+    buttons.forEach(button => button.disabled = true);
+    try{
+    await solveWhiteCross();
+    await solveWhiteCorners();
+    await solveMiddleLayer();
+    await solveYellowCrossPosition();
+    await solveYellowCrossAlignment();
+    await solveYelowCornersPosition();
+    await solveYellowCornersRotation();
+    }
+    catch (error) {
+        console.error('An error occurred while solving the cube:', error);
+    } finally {
+        buttons.forEach(button => button.disabled = false);
+    }
+}
 
 const Random = document.getElementById('Randomize');
 Random.addEventListener('click', async () => {
     await Randomzie();
 });
 
-
+const SolveWhiteCross = document.getElementById('SolveWhiteCross');
 SolveWhiteCross.addEventListener('click', async () => {
     await solveWhiteCross();
     console.log('count:', counter);
 });
 
+const SolveWhiteCorners = document.getElementById('SolveWhiteCorners');
 SolveWhiteCorners.addEventListener('click', async () => {
     await solveWhiteCorners();
     console.log('count:', counter);
 });
 
+const SolveMiddleLayer = document.getElementById('SolveMiddleLayer');
 SolveMiddleLayer.addEventListener('click', async () => {
     await solveMiddleLayer();
 });
 
-
+const SolveYellowCrossPosition = document.getElementById('SolveYellowCrossPosition');
 SolveYellowCrossPosition.addEventListener('click', async () => {
     await solveYellowCrossPosition();
 
 });
 
+const SolveYellowCrossAlignment = document.getElementById('SolveYellowCrossAlignment');
 SolveYellowCrossAlignment.addEventListener('click', async () => {
     await solveYellowCrossAlignment();
 });
 
+const SolveYelowCornersPosition = document.getElementById('SolveYelowCornersPosition');
 SolveYelowCornersPosition.addEventListener('click', async () => {
     await solveYelowCornersPosition();
 });
 
+const SolveYellowCornersRotation = document.getElementById('SolveYellowCornersRotation');
 SolveYellowCornersRotation.addEventListener('click', async () => {
     await solveYellowCornersRotation();
 });
@@ -967,14 +1005,23 @@ SolveYellowCornersRotation.addEventListener('click', async () => {
 
 const Solve = document.getElementById('Solve');
 Solve.addEventListener('click', async () => {
-    await solveWhiteCross();
-    await solveWhiteCorners();
-    await solveMiddleLayer();
-    await solveYellowCrossPosition();
-    await solveYellowCrossAlignment();
-    await solveYelowCornersPosition();
-    await solveYellowCornersRotation();
+    await SolveTheCube();
 
+});
+
+
+let inputSpeed = document.getElementById('rotation-speed');
+const submitButton = document.getElementById('submitButton');
+submitButton.addEventListener('click', () => {
+    const inputValue = parseInt(inputSpeed.value);
+
+    // Check if the value is within the range
+    if (inputValue >= 64 && inputValue <= 2000) {
+        console.log('Valid number:', inputValue);
+        rot_speed = inputValue;
+    } else {
+        console.log('Invalid number. Please enter a value between 64 and 2000.');
+    }
 });
 
 

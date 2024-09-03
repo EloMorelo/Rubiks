@@ -32,16 +32,21 @@
 					</div>
 				</div>
 				<button id="go-back-button">Go Back</button>
+				<div id="rotation-speed-div">
+				<label for="rotation-speed">Rotation duration between 64 and 2000:</label>
+				<input type="number" id="rotation-speed" min="64" max="2000" />
+				<button id="submitButton">Submit</button>
+				</div>
 				<div id="manual-rotation">
 					<div id="row-one">
 						<div class="rotation-label"><b>Clockwise Rotation</b></div>
 							<div id="row-one-buttons">
 								<button id="rotateLeftButton">Rotate L</button>
 								<button id="rotateRightButton">Rotate R</button>
-								<button id="rotateBottomButton">Rotate Bottom</button>
-								<button id="rotateTopButton">Rotate T</button>
+								<button id="rotateBottomButton">Rotate D</button>
+								<button id="rotateTopButton">Rotate U</button>
 								<button id="rotateFrontButton">Rotate F</button>
-								<button id="rotateBackButton">Rotate Back</button>
+								<button id="rotateBackButton">Rotate B</button>
 							</div>
 					</div>
 					<div id="row-two">
@@ -49,10 +54,10 @@
 							<div id="row-two-buttons">
 								<button id="rotateLeftcounter">Rotate L'</button>
 								<button id="rotateRightcounter">Rotate R'</button>
-								<button id="rotateBottomButtoncounter">Rotate Bottom'</button>
-								<button id="rotateTopButtoncounter">Rotate T'</button>
+								<button id="rotateBottomButtoncounter">Rotate D'</button>
+								<button id="rotateTopButtoncounter">Rotate U'</button>
 								<button id="rotateFrontButtoncounter">Rotate F'</button>
-								<button id="rotateBackButtoncounter">Rotate Back'</button>
+								<button id="rotateBackButtoncounter">Rotate B'</button>
 							</div>
 					</div>
 				</div>
@@ -82,6 +87,10 @@
 							<button id="SolveYellowCrossAlignment">Allign YellowCross</button>
 							<button id="SolveYelowCornersPosition">Solve Yellow Corners</button>
 							<button id="SolveYellowCornersRotation">Allign Yellow Corners</button>
+						</div>
+						<div id="steps">
+							<div class="rotation-label"><b>Steps</b></div>
+							<h1 class="step">(..)</h1>
 						</div>
 					</div>
 				</div>

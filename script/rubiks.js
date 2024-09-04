@@ -102,7 +102,7 @@ async function rotateWall(wall, clockwise) {
         })
         .start();
 
-        await sleep(rot_speed+10);
+        await sleep(rot_speed+64);
         counter++;
 }
 

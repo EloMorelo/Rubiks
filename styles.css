@@ -186,6 +186,9 @@ body, html {
     justify-content: center;
     text-align: center;
 }
+.step{
+    font-size: 20px;
+}
 
 #clear {
     display: flex;

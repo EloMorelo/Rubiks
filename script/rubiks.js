@@ -20,7 +20,7 @@ cubelets.forEach(cubelet => scene.add(cubelet));
 const webglContainer = document.getElementById('webgl-container');
 
 
-let rot_speed = 64;
+let rot_speed = 32;
 
 
 function setRendererSize() {
@@ -102,7 +102,7 @@ async function rotateWall(wall, clockwise) {
         })
         .start();
 
-        await sleep(rot_speed+64);
+        await sleep(64);
         counter++;
 }
 

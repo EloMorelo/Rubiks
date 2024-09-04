@@ -170,11 +170,18 @@ body, html {
     background-color: #f0f0f0;
     cursor: pointer;
 }
+
 #steps {
+    margin-top: 20px;
     justify-content: center;
     text-align: center;
 }
 
+#clear {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
 
 .rotation-label {
     margin-bottom: 10px; 

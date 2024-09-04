@@ -4,6 +4,7 @@ import { pushCubelets } from './Cube.js';
 import { getCubeletAtPosition, findWallPiece, findCornerPiece, getColorsFromCubelet , checkColorDirection, isCubeletAtPosition,
  getRelativePositionOnWall, getCubeletWall, getCubeletWallMiddleFace , getCubeletWallColorFace, getCubeletWallWhiteFace , checkPieceIfMiddleMatch , getAdjacentWallToWhiteFace,
  getRightWallCorner, CornerTwoWalls, doesFaceMatchCenter, CheckColorOfWall, CheckColorRightLeft, doesOtherFaceMatchSideWalls} from './GetInfo.js';
+import { aligment } from './menu.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth * 0.5 / window.innerHeight, 0.1, 1000);
@@ -96,7 +97,7 @@ async function rotateWall(wall, clockwise) {
                 cubelet.updateMatrixWorld();
             });
             scene.remove(tempGroup);
-            movesHistory.push(move);
+            aligment.style.display === 'block' && movesHistory.push(move);
             updateStepsDisplay();
         })
         .start();
@@ -110,10 +111,17 @@ function getLastMove() {
 }
 function updateStepsDisplay() {
     const stepsDiv = document.querySelector('#steps .step');
-    stepsDiv.innerHTML = movesHistory.join(' '); // Display all moves separated by spaces
+    stepsDiv.innerHTML = movesHistory.join(' ');
 }
 
+const stepsContainer = document.querySelector('.step');
+const clearButton = document.getElementById('clearStepsButton');
 
+clearButton.addEventListener('click', () => {
+    stepsContainer.textContent = '';
+    movesHistory = [];
+    console.log('Steps have been cleared');
+});
 
 const raycaster = new THREE.Raycaster();
 const buttons = document.querySelectorAll('#SolveWhiteCross, #SolveWhiteCorners, #SolveMiddleLayer, #SolveYellowCrossPosition, #SolveYellowCrossAlignment, #SolveYelowCornersPosition, #SolveYellowCornersRotation, #Solve, #Randomize');

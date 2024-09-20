@@ -1,36 +1,11 @@
 import * as THREE from 'https://unpkg.com/three/build/three.module.js';
-import { OrbitControls } from 'https://unpkg.com/three/examples/jsm/controls/OrbitControls.js';
-import { pushCubelets } from './Cube.js';
-import { getCubeletAtPosition, findWallPiece, findCornerPiece, getColorsFromCubelet , checkColorDirection, isCubeletAtPosition,
- getRelativePositionOnWall, getCubeletWall, getCubeletWallMiddleFace , getCubeletWallColorFace, getCubeletWallWhiteFace , checkPieceIfMiddleMatch , getAdjacentWallToWhiteFace,
- getRightWallCorner, CornerTwoWalls, doesFaceMatchCenter, CheckColorOfWall, CheckColorRightLeft, doesOtherFaceMatchSideWalls} from './GetInfo.js';
+import { cubelets, scene , renderer, camera} from './main.js'; 
+import * as GetInfo from './GetInfo.js';
 import { aligment } from './menu.js';
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth * 0.5 / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth / 2 , window.innerHeight);
-document.body.appendChild(renderer.domElement);
+
 const originalColors = new Map();
-scene.background = new THREE.Color(0x808080);
-const ambientLight = new THREE.AmbientLight(0xffffff, 1);
-scene.add(ambientLight);
-export const cubelets = pushCubelets();
-cubelets.forEach(cubelet => scene.add(cubelet));
-const webglContainer = document.getElementById('webgl-container');
-
-
 let rot_speed = 32;
-
-
-function setRendererSize() {
-    renderer.setSize(webglContainer.clientWidth, webglContainer.clientHeight);
-    camera.aspect = webglContainer.clientWidth / webglContainer.clientHeight;
-    camera.updateProjectionMatrix();
-}
-setRendererSize();
-webglContainer.appendChild(renderer.domElement);
-
 let counter = 0;
 let movesHistory = [];
 
@@ -102,13 +77,14 @@ async function rotateWall(wall, clockwise) {
         })
         .start();
 
-        await sleep(64);
+        await sleep(rot_speed+64);
         counter++;
 }
 
 function getLastMove() {
     return movesHistory[movesHistory.length - 1];
 }
+
 function updateStepsDisplay() {
     const stepsDiv = document.querySelector('#steps .step');
     stepsDiv.innerHTML = movesHistory.join(' ');
@@ -158,7 +134,7 @@ function onMouseDown(event) {
         console.log(faceIndex);
         if (faceIndex >= 0 && faceIndex < faceNames.length) {
             const targetColor = 0xffffff;
-            checkColorDirection(clickedObject, targetColor);
+            GetInfo.checkColorDirection(clickedObject, targetColor);
             changeFaceColor(clickedObject, faceIndex, faceColor);
             console.log('Face color changed');
         } else {
@@ -204,7 +180,7 @@ function sleep(ms) {
 }
 
 
-// 1. ----solve white cross---- fix 1 bottom' -> randomize 
+// 1. ----solve white cross----
 async function solveWhiteCross() {
     buttons.forEach(button => button.disabled = true);
 
@@ -217,9 +193,9 @@ async function solveWhiteCross() {
     ];
 
     for (const piece of edgePieces) {
-        const cubelet = findWallPiece(piece.color1, piece.color2);
+        const cubelet = GetInfo.findWallPiece(piece.color1, piece.color2);
 
-        if (isCubeletAtPosition(cubelet, piece.targetPos.x, piece.targetPos.y, piece.targetPos.z) && checkColorDirection(cubelet, piece.color1) === '-y') {
+        if (GetInfo.isCubeletAtPosition(cubelet, piece.targetPos.x, piece.targetPos.y, piece.targetPos.z) && GetInfo.checkColorDirection(cubelet, piece.color1) === '-y') {
             continue;
         }
 
@@ -240,32 +216,32 @@ async function solveWhiteCross() {
 async function movePieceToTopLayer(cubelet) {
     if (cubelet.position.y === -1) 
     {
-        const wall = getCubeletWall(cubelet);
+        const wall = GetInfo.getCubeletWall(cubelet);
                 if (wall !== 'unknown') {
             await rotateWall(wall, true); 
         }
     }
     if (cubelet.position.y === 0) 
         {
-        const colorWall = getCubeletWallColorFace(cubelet);
+        const colorWall = GetInfo.getCubeletWallColorFace(cubelet);
         if (colorWall !== 'unknown') {
-            if(getRelativePositionOnWall(cubelet, colorWall) === 'left'){
+            if(GetInfo.getRelativePositionOnWall(cubelet, colorWall) === 'left'){
                 await rotateWall(colorWall, true); 
                 await rotateWall('top', false);
                 await rotateWall(colorWall, false);
             }
-            else if(getRelativePositionOnWall(cubelet, colorWall) === 'right'){
+            else if(GetInfo.getRelativePositionOnWall(cubelet, colorWall) === 'right'){
                 await rotateWall(colorWall, false); 
                 await rotateWall('top', false);
                 await rotateWall(colorWall, true);
             }
         }
     }
-    if (cubelet.position.y === 1 && checkColorDirection(cubelet, 0xffffff) !== '+y')
+    if (cubelet.position.y === 1 && GetInfo.checkColorDirection(cubelet, 0xffffff) !== '+y')
     {
-        const whiteWall = getCubeletWallWhiteFace(cubelet);
+        const whiteWall = GetInfo.getCubeletWallWhiteFace(cubelet);
         await rotateWall(whiteWall, false);
-        const colorWall = getCubeletWallColorFace(cubelet);
+        const colorWall = GetInfo.getCubeletWallColorFace(cubelet);
         await rotateWall(colorWall, false);
         await rotateWall('top', true);
         await rotateWall(colorWall, true);
@@ -285,7 +261,7 @@ async function rotateTopLayerToCorrectPosition(cubelet, targetPos) {
 }
 
 async function movePieceDownToCorrectPosition(cubelet) {
-    const wall = getCubeletWallColorFace(cubelet);
+    const wall = GetInfo.getCubeletWallColorFace(cubelet);
     await rotateWall(wall, true);
     await rotateWall(wall, true);
     
@@ -302,8 +278,8 @@ async function solveWhiteCorners() {
         { color1: 0xffffff, color2: 0xffa500, color3: 0x0000ff, targetPos: { x: -1, y: -1, z: 1 } }  // White-Orange-Blue
     ];
     for(const piece of cornerPieces){
-        const cubelet = findCornerPiece(piece.color1, piece.color2, piece.color3);
-        if (isCubeletAtPosition(cubelet, piece.targetPos.x, piece.targetPos.y, piece.targetPos.z) && checkColorDirection(cubelet, piece.color1) === '-y') {
+        const cubelet = GetInfo.findCornerPiece(piece.color1, piece.color2, piece.color3);
+        if (GetInfo.isCubeletAtPosition(cubelet, piece.targetPos.x, piece.targetPos.y, piece.targetPos.z) && GetInfo.checkColorDirection(cubelet, piece.color1) === '-y') {
             continue;
         }
 
@@ -324,18 +300,18 @@ async function solveWhiteCorners() {
 async function moveCornerPieceToTopLayer(cubelet,targetPos) {
     if(cubelet.position.y === -1)
         {
-        if(checkColorDirection(cubelet, 0xffffff) === '-y')
+        if(GetInfo.checkColorDirection(cubelet, 0xffffff) === '-y')
             {
-                const RightWall = getRightWallCorner(cubelet);
+                const RightWall = GetInfo.getRightWallCorner(cubelet);
                 await rotateWall(RightWall, true);
                 await rotateWall('top', true);
                 await rotateWall(RightWall, false);
             }
             else
             {
-                const adjwall = getAdjacentWallToWhiteFace(cubelet);
-                const whitewall = getCubeletWallWhiteFace(cubelet);
-                if (getRelativePositionOnWall(cubelet, whitewall) === 'bottom-left-corner') {
+                const adjwall = GetInfo.getAdjacentWallToWhiteFace(cubelet);
+                const whitewall = GetInfo.getCubeletWallWhiteFace(cubelet);
+                if (GetInfo.getRelativePositionOnWall(cubelet, whitewall) === 'bottom-left-corner') {
                     await rotateWall(adjwall.adjacentWall1, false);
                     await rotateWall('top', true);
                     await rotateWall(adjwall.adjacentWall1, true);
@@ -348,12 +324,12 @@ async function moveCornerPieceToTopLayer(cubelet,targetPos) {
                 }
             }
     }
-    if(cubelet.position.y === 1 && checkColorDirection(cubelet, 0xffffff) === '+y')
+    if(cubelet.position.y === 1 && GetInfo.checkColorDirection(cubelet, 0xffffff) === '+y')
     {  
         while (!(cubelet.position.x === targetPos.x && cubelet.position.z === targetPos.z)) {
             await rotateWall('top', true); 
         }
-        const RightWall = getRightWallCorner(cubelet);
+        const RightWall = GetInfo.getRightWallCorner(cubelet);
         await rotateWall(RightWall, true);
         await rotateWall('top', true);
         await rotateWall('top', true);
@@ -369,9 +345,9 @@ async function rotateCornerPieceToCorrectPosition(cubelet, targetPos) {
 }
 
 async function moveCornerPieceDownToCorrectPosition(cubelet) {
-    const whiteWall = getCubeletWallWhiteFace(cubelet);
-    const adjwall = getAdjacentWallToWhiteFace(cubelet);
-    if(getRelativePositionOnWall(cubelet, whiteWall) === 'top-right-corner'){
+    const whiteWall = GetInfo.getCubeletWallWhiteFace(cubelet);
+    const adjwall = GetInfo.getAdjacentWallToWhiteFace(cubelet);
+    if(GetInfo.getRelativePositionOnWall(cubelet, whiteWall) === 'top-right-corner'){
         await rotateWall('top',true);
         await rotateWall(adjwall.adjacentWall1, true);
         await rotateWall('top', false);
@@ -400,9 +376,9 @@ async function solveMiddleLayer() {
     ];
 
     for (const piece of edgePieces) {
-        const cubelet = findWallPiece(piece.color1, piece.color2);
+        const cubelet = GetInfo.findWallPiece(piece.color1, piece.color2);
 
-        if (isCubeletAtPosition(cubelet, piece.targetPos.x, piece.targetPos.y, piece.targetPos.z) && checkPieceIfMiddleMatch(cubelet, piece.color1)) {
+        if (GetInfo.isCubeletAtPosition(cubelet, piece.targetPos.x, piece.targetPos.y, piece.targetPos.z) && GetInfo.checkPieceIfMiddleMatch(cubelet, piece.color1)) {
             continue;
         }
         await MoveMiddleLayerToTop(cubelet,piece.color1);
@@ -444,12 +420,12 @@ async function MiddleToRight(primary,opposite){
 async function MoveMiddleLayerToTop(cubelet,color1) {
     if(cubelet.position.y === 0)
     {
-        const wall = getCubeletWallMiddleFace(cubelet,color1);
+        const wall = GetInfo.getCubeletWallMiddleFace(cubelet,color1);
         if (wall.primaryWall !== 'unknown') {
-            if(getRelativePositionOnWall(cubelet, wall.primaryWall) === 'left'){
+            if(GetInfo.getRelativePositionOnWall(cubelet, wall.primaryWall) === 'left'){
                 await MiddleToLeft(wall.primaryWall,wall.oppositeWall);
             }
-            else if(getRelativePositionOnWall(cubelet, wall.primaryWall) === 'right'){
+            else if(GetInfo.getRelativePositionOnWall(cubelet, wall.primaryWall) === 'right'){
                 await MiddleToRight(wall.primaryWall,wall.oppositeWall);
             }
         }
@@ -460,7 +436,7 @@ async function MoveMiddleLayerToTop(cubelet,color1) {
 async function RotateMiddleLayerToCorrectPosition(cubelet,color1,color2) {
     if(cubelet.position.y === 1)
     {
-    while((doesFaceMatchCenter(cubelet,color1,color2))!=true){
+    while((GetInfo.doesFaceMatchCenter(cubelet,color1,color2))!=true){
         await rotateWall('top',true);
     }
     }
@@ -469,9 +445,9 @@ async function RotateMiddleLayerToCorrectPosition(cubelet,color1,color2) {
 async function MoveMiddleLayerDownToCorrectPosition(cubelet,color1,color2) {
     if(cubelet.position.y === 1)
     {
-    const { matchesLeft, matchesRight } = doesOtherFaceMatchSideWalls(cubelet, color1, color2);    
-    const wall = getCubeletWallMiddleFace(cubelet,color1);
-    const sidewall = CheckColorRightLeft(wall.primaryWall);
+    const { matchesLeft, matchesRight } = GetInfo.doesOtherFaceMatchSideWalls(cubelet, color1, color2);    
+    const wall = GetInfo.getCubeletWallMiddleFace(cubelet,color1);
+    const sidewall = GetInfo.CheckColorRightLeft(wall.primaryWall);
     if(matchesLeft)
     {
         await MiddleToLeft(wall.primaryWall,sidewall.leftWall);
@@ -521,8 +497,8 @@ async function solveYellowCrossPosition() {
 }
 
 function detectYellowDot() {
-    const topCenter = getCubeletAtPosition(0, 1, 0);
-    if (checkColorDirection(topCenter, 0xffff00) === '+y') {
+    const topCenter = GetInfo.getCubeletAtPosition(0, 1, 0);
+    if (GetInfo.checkColorDirection(topCenter, 0xffff00) === '+y') {
         const yellowEdges = detectYellowEdges();
         if (yellowEdges.length === 0) {
             yellowEdges.length = 0;
@@ -583,8 +559,8 @@ function detectYellowEdges() {
     let yellowEdges = [];
 
     for (const edge of topEdges) {
-        const cubelet = getCubeletAtPosition(edge.position.x, edge.position.y, edge.position.z);
-        if (checkColorDirection(cubelet, 0xffff00) === edge.face) {
+        const cubelet = GetInfo.getCubeletAtPosition(edge.position.x, edge.position.y, edge.position.z);
+        if (GetInfo.checkColorDirection(cubelet, 0xffff00) === edge.face) {
             yellowEdges.push(edge);
         }
     }
@@ -683,9 +659,9 @@ async function CheckYellowCrossAlignment() {
         let currentCorrectCubelets = {}; 
         for (let j = 0; j < Pieces.length; j++) {
             const piece = Pieces[j];
-            const cubelet = findWallPiece(piece.color1, piece.color2);
+            const cubelet = GetInfo.findWallPiece(piece.color1, piece.color2);
 
-            if (isCubeletAtPosition(cubelet, piece.targetPos.x, piece.targetPos.y, piece.targetPos.z) && checkPieceIfMiddleMatch(cubelet, piece.color2)) {
+            if (GetInfo.isCubeletAtPosition(cubelet, piece.targetPos.x, piece.targetPos.y, piece.targetPos.z) && GetInfo.checkPieceIfMiddleMatch(cubelet, piece.color2)) {
                 correct++;
                 currentCorrectCubelets[`cubelet${correct}`] = cubelet;  
             }
@@ -727,13 +703,13 @@ async function solveYellowCrossAlignment() {
     }
     else if(pieceCount  === 2)
     {
-        const colordirection1 = getCubeletWallMiddleFace(Pieces.cubelet1, 0xffff00);
-        const colordirection2 = getCubeletWallMiddleFace(Pieces.cubelet2, 0xffff00);
+        const colordirection1 = GetInfo.getCubeletWallMiddleFace(Pieces.cubelet1, 0xffff00);
+        const colordirection2 = GetInfo.getCubeletWallMiddleFace(Pieces.cubelet2, 0xffff00);
         if((Pieces.cubelet1.position.x === 0 && Pieces.cubelet2.position.x === 0) || (Pieces.cubelet1.position.z === 0 && Pieces.cubelet2.position.z === 0))
         {
-            const adjwall = CheckColorRightLeft(colordirection1.primaryWall);
+            const adjwall = GetInfo.CheckColorRightLeft(colordirection1.primaryWall);
             const rightwall = adjwall.rightWall;
-            const adjwall2 = CheckColorRightLeft(colordirection2.primaryWall);
+            const adjwall2 = GetInfo.CheckColorRightLeft(colordirection2.primaryWall);
             const rightwall2 = adjwall2.rightWall;
             await rotateWall('top', true);
             await YellowMiddleAlgorithm(rightwall);
@@ -743,7 +719,7 @@ async function solveYellowCrossAlignment() {
         }
         else
         {
-            const adjwalls = CheckColorRightLeft(colordirection1.primaryWall);
+            const adjwalls = GetInfo.CheckColorRightLeft(colordirection1.primaryWall);
             const leftWall = adjwalls.leftWall;
             const rightWall = adjwalls.rightWall;
             const primaryWall1 = colordirection1.primaryWall;
@@ -799,8 +775,8 @@ async function solveYelowCornersPosition() {
     const correctCubelets = [];
     function checkCorrectPositions() {
         return edgePieces.filter(edge => {
-            const cubelet = findCornerPiece(edge.color1, edge.color2, edge.color3);
-            if (isCubeletAtPosition(cubelet, edge.targetPos.x, edge.targetPos.y, edge.targetPos.z)) {
+            const cubelet = GetInfo.findCornerPiece(edge.color1, edge.color2, edge.color3);
+            if (GetInfo.isCubeletAtPosition(cubelet, edge.targetPos.x, edge.targetPos.y, edge.targetPos.z)) {
                 correctCubelets.push(cubelet);
                 return true;
             }
@@ -820,7 +796,7 @@ async function solveYelowCornersPosition() {
 
     if (correct === 1) {
         const rtccubelet = correctCubelets[0];
-        const wall = CornerTwoWalls(rtccubelet);
+        const wall = GetInfo.CornerTwoWalls(rtccubelet);
         await SwapYellowCorners(wall.front);
         correct = checkCorrectPositions().length;
 
@@ -828,7 +804,7 @@ async function solveYelowCornersPosition() {
 
     if (correct === 1) {
         const rtccubelet = correctCubelets[0];
-        const wall = CornerTwoWalls(rtccubelet);
+        const wall = GetInfo.CornerTwoWalls(rtccubelet);
         await SwapYellowCorners(wall.front);
         correct = checkCorrectPositions().length;
     }
@@ -861,12 +837,12 @@ async function solveYellowCornersRotation() {
         let Rightwall = null;
         for (let i = 0; i < 4; i++) { 
             const piece = cornerPieces[i];
-            const cubelet = findCornerPiece(piece.color1, piece.color2, piece.color3);
-            let rotation = checkColorDirection(cubelet, 0xffff00);
+            const cubelet = GetInfo.findCornerPiece(piece.color1, piece.color2, piece.color3);
+            let rotation = GetInfo.checkColorDirection(cubelet, 0xffff00);
             if (rotation !== correctRotation) {
                 if(!Rightwall)
                 {
-                    const walls = CornerTwoWalls(cubelet);
+                    const walls = GetInfo.CornerTwoWalls(cubelet);
                     Rightwall = walls.right;
                     console.log('Rightwall is set to:', Rightwall);
 
@@ -874,7 +850,7 @@ async function solveYellowCornersRotation() {
             }
             while (rotation !== correctRotation) {
                 await RDRD(Rightwall);
-                rotation = checkColorDirection(cubelet, 0xffff00); 
+                rotation = GetInfo.checkColorDirection(cubelet, 0xffff00); 
             }
             if(Rightwall !== null)
             {
@@ -906,7 +882,7 @@ async function RDRD(wall) {
     await rotateWall('bottom', true);
 }
 async function SwapYellowCorners(front) {
-    const adjwall = CheckColorRightLeft(front);
+    const adjwall = GetInfo.CheckColorRightLeft(front);
     await rotateWall('top', true);
     await rotateWall(adjwall.rightWall, true);
     await rotateWall('top', false);
@@ -1129,25 +1105,4 @@ rotateBackButtoncounter.addEventListener('click', () => {
 });
 
 
-camera.position.z = 10;
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enablePan = false;
-controls.enableDamping = true;
 
-controls.target.set(0, 0, 0);
-
-renderer.domElement.addEventListener('contextmenu', function (event) {
-    event.preventDefault();
-}, false);
-
-
-
-function animate() {
-    requestAnimationFrame(animate);
-    controls.update();
-    renderer.render(scene, camera);
-    TWEEN.update();
-
-}
-
-animate();

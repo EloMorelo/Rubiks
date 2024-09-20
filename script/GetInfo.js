@@ -1,10 +1,7 @@
 import { pushCubelets } from './Cube.js';
 import * as THREE from 'https://unpkg.com/three/build/three.module.js';
-import { cubelets } from './rubiks.js';
+import { cubelets } from './main.js';
 
-
-
-// const cubelets = pushCubelets();
 
 
 
